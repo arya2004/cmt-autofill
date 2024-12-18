@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Save Authors to chrome.storage
     saveButton.addEventListener('click', () => {
       const authors = [];
-      for (let i = 1; i <= 2; i++) {
+      for (let i = 1; i <= 4; i++) {
         authors.push({
           email: document.getElementById(`email${i}`).value,
           name: document.getElementById(`name${i}`).value,
