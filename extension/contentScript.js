@@ -11,7 +11,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
   });
   
-  // Function to add authors one by one
+
+  function setKnockoutValue(inputElement, value) {
+    return new Promise((resolve) => {
+      if (inputElement) {
+        inputElement.focus();
+        inputElement.value = value;
+        inputElement.dispatchEvent(new Event('input', { bubbles: true }));
+        inputElement.dispatchEvent(new Event('change', { bubbles: true }));
+        console.log(`Set value for: ${inputElement.placeholder || inputElement.name}`);
+      }
+      setTimeout(resolve, 1); 
+    });
+  }
+  
   function fillAuthorsSequentially(authors) {
     let index = 0;
   
@@ -24,62 +37,55 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   
       const author = authors[index];
       const addButton = document.querySelector('button[data-bind*="showDialog(true)"]');
-      
-      console.log(author);
-      // Step 1: Click the "Add" button to open the form
+  
+    
       if (addButton) {
         addButton.click();
         console.log(`Clicked Add button for Author ${index + 1}`);
   
-        setTimeout(() => {
-          // Step 2: Populate the input fields
-          const emailField = document.querySelector('input[placeholder="Email"]');
-          const firstNameField = document.querySelector('input[placeholder="First Name"]');
-          const lastNameField = document.querySelector('input[placeholder="Last Name"]');
-          const organizationField = document.querySelector('input[placeholder="Organization"]');
-          const countryDropdown = document.querySelector('select[aria-label="Country/Region"]');
+        setTimeout(async () => {
+        
+          const form = document.querySelector('form[data-bind*="submit: function () { $parent.addAuthor($data); }"]');
   
-          if (emailField && firstNameField && lastNameField && organizationField && countryDropdown) {
-            // Fill in the fields
-            emailField.value = author.email || '';
-            emailField.dispatchEvent(new Event('input', { bubbles: true }));
-  
-            firstNameField.value = author.name || '';
-            firstNameField.dispatchEvent(new Event('input', { bubbles: true }));
-  
-            lastNameField.value = author.surname || '';
-            lastNameField.dispatchEvent(new Event('input', { bubbles: true }));
-  
-            organizationField.value = author.organization || '';
-            organizationField.dispatchEvent(new Event('input', { bubbles: true }));
-  
-            // Set the country dropdown
-            const targetCountry = author.country || '';
-            const option = Array.from(countryDropdown.options).find(opt => opt.value === targetCountry);
-            if (option) {
-              countryDropdown.value = targetCountry;
-              countryDropdown.dispatchEvent(new Event('change', { bubbles: true }));
-              console.log(`Selected country: ${targetCountry}`);
-            }
-  
-            console.log(`Filled Author ${index + 1}:`, author);
-  
-            // Step 3: Click the "Submit" button
-            const submitButton = document.querySelector('button.btn.btn-primary');
-            if (submitButton) {
-              submitButton.click();
-              console.log(`Clicked Submit button for Author ${index + 1}`);
-  
-              // Step 4: Wait and process the next author
-              index++;
-              setTimeout(processNextAuthor, 2000);
-            } else {
-              alert('Submit button not found!');
-            }
-          } else {
-            alert('One or more input fields not found. Please check the page layout.');
+          if (!form) {
+            alert('Author form not found.');
+            return;
           }
-        }, 1000); // Wait for the form to open
+  
+          const emailField = form.querySelector('input[data-bind*="value: email"]');
+          const firstNameField = form.querySelector('input[data-bind*="value: firstName"]');
+          const lastNameField = form.querySelector('input[data-bind*="value: lastName"]');
+          const organizationField = form.querySelector('input[data-bind*="value: organization"]');
+          const countryDropdown = form.querySelector('select[data-bind*="value: countryCode"]');
+          const submitButton = form.querySelector('button[type="submit"]');
+  
+        
+          if (emailField) await setKnockoutValue(emailField, author.email || '');
+          if (firstNameField) await setKnockoutValue(firstNameField, author.name || '');
+          if (lastNameField) await setKnockoutValue(lastNameField, author.surname || '');
+          if (organizationField) await setKnockoutValue(organizationField, author.organization || '');
+  
+          if (countryDropdown) {
+            countryDropdown.value = author.country || '';
+            countryDropdown.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log(`Selected country: ${author.country}`);
+            await new Promise((resolve) => setTimeout(resolve, 1)); 
+          }
+  
+          console.log(`Filled Author ${index + 1}:`, author);
+  
+       
+          if (submitButton) {
+            submitButton.click();
+            console.log(`Clicked Submit button for Author ${index + 1}`);
+  
+          
+            index++;
+            setTimeout(processNextAuthor, 2);
+          } else {
+            alert('Submit button not found in the form!');
+          }
+        }, 1); 
       } else {
         alert('Add button not found on the page.');
       }
