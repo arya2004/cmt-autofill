@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMT Author Auto-Fill</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+      margin: 0;
+      width: 450px;
+      box-sizing: border-box;
+    }
+    h1 {
+      font-size: 18px;
+      text-align: center;
+    }
+    h2 {
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    label {
+      display: block;
+      margin: 5px 0 2px;
+    }
+    input, select {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>CMT Author Auto-Fill</h1>
+  <form id="authorForm">
+    <div id="authorFields">
+      <!-- Fields for 4 Authors -->
+      <div class="author" data-author-index="1">
+        <h2>Author 1</h2>
+        <label>Email:</label>
+        <input type="email" id="email1" placeholder="Email">
+        <label>First Name:</label>
+        <input type="text" id="name1" placeholder="First Name">
+        <label>Surname:</label>
+        <input type="text" id="surname1" placeholder="Surname">
+        <label>Organization:</label>
+        <input type="text" id="organization1" placeholder="Organization">
+        <label>Country:</label>
+        <select id="country1">
+          <option value="">Select...</option>
+          <option value="IN">India</option>
+          <option value="HU">Hungary</option>
+          <option value="HK">Hong Kong SAR</option>
+          <option value="IR">Iran</option>
+          <option value="IS">Iceland</option>
+        </select>
+      </div>
+
+      <div class="author" data-author-index="2">
+        <h2>Author 2</h2>
+        <label>Email:</label>
+        <input type="email" id="email2" placeholder="Email">
+        <label>First Name:</label>
+        <input type="text" id="name2" placeholder="First Name">
+        <label>Surname:</label>
+        <input type="text" id="surname2" placeholder="Surname">
+        <label>Organization:</label>
+        <input type="text" id="organization2" placeholder="Organization">
+        <label>Country:</label>
+        <select id="country2">
+          <option value="">Select...</option>
+          <option value="IN">India</option>
+          <option value="HU">Hungary</option>
+          <option value="HK">Hong Kong SAR</option>
+          <option value="IR">Iran</option>
+          <option value="IS">Iceland</option>
+        </select>
+      </div>
+    </div>
+    <button type="button" id="saveAuthors">Save Authors</button>
+    <button type="button" id="loadAuthors">Load Authors</button>
+    <button type="button" id="autoFillAuthors">Auto-Fill Authors</button>
+  </form>
+  <script src="popup.js"></script>
+</body>
+</html>

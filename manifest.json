@@ -1,0 +1,17 @@
+{    "manifest_version": 3,
+    "name": "CMT Author Auto-Filler",
+    "version": "1.0",
+    "description": "Auto-fills author details in Microsoft CMT.",
+    "permissions": ["storage", "scripting", "activeTab", "declarativeContent"],
+    "host_permissions": ["https://cmt3.research.microsoft.com/*/Track/*/Submission/Create"],
+    "action": {
+      "default_popup": "extension/popup.html"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["extension/contentScript.js"]
+      }
+    ]
+  }
+  
