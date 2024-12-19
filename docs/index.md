@@ -15,14 +15,35 @@ A Chrome extension that automates the process of filling author details in the M
 
 ---
 
+## **Screenshots**
+
+### **Extension Popup Interface**
+
+This is the popup interface where users can input author details and initiate the auto-fill process.
+
+<div style="text-align: center;">
+    <img src="./images/ext.png" alt="Extension Popup" width="400">
+</div>
+
+
+### **CMT Auto-Fill in Action**
+
+This screenshot shows the auto-filled author details in the CMT submission form after using the extension.
+
+![Auto-Filled Form](./images/after.png)
+
+---
+
 ## **Installation**
 
 1. **Clone or Download** the repository to your local machine:
+
    ```bash
    git clone https://github.com/arya2004/cmt-autofill.git
    ```
 
 2. **Open Chrome** and navigate to:
+
    ```
    chrome://extensions
    ```
@@ -67,15 +88,10 @@ Each author includes the following details:
 - **Organization**
 - **Country**
 
+---
 
 ## **License**
 
 This project is licensed under the [MIT License](LICENSE).
 
 ---
-
-## **Support**
-
-If you encounter any issues or have feature requests, feel free to open an issue on the repository or contact the maintainer.
-
-Happy automating! 🚀
