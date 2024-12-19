@@ -1,5 +1,6 @@
 title: CMT Author Auto-Fill Chrome Extension
 description: A Chrome extension that automates the process of filling author details in the Microsoft Conference Management Toolkit (CMT)
 show_downloads: true
-google_analytics:
-theme: jekyll-theme-cayman
+remote_theme: pages-themes/cayman@v0.2.0
+plugins:
+- jekyll-remote-theme
