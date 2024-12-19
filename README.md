@@ -21,7 +21,7 @@ A Chrome extension that automates the process of filling author details in the M
 This is the popup interface where users can input author details and initiate the auto-fill process.
 
 <div style="text-align: center;">
-    <img src="./images/ext.png" alt="Extension Popup" width="400">
+    <img src="./docs/images/ext.png" alt="Extension Popup" width="400">
 </div>
 
 
@@ -29,7 +29,7 @@ This is the popup interface where users can input author details and initiate th
 
 This screenshot shows the auto-filled author details in the CMT submission form after using the extension.
 
-![Auto-Filled Form](./images/after.png)
+![Auto-Filled Form](./docs/images/after.png)
 
 ---
 
@@ -91,6 +91,7 @@ Each author includes the following details:
 
 ## **License**
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [CC BY-NC-ND 4.0](LICENSE).
 
 ---
+

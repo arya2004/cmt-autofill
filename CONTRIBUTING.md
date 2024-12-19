@@ -93,7 +93,7 @@ To contribute code:
 
 ## **License**
 
-By contributing to this project, you agree that your contributions will be licensed under the project's [MIT License](LICENSE).
+By contributing to this project, you agree that your contributions will be licensed under the project's [CC BY-NC-ND 4.0](LICENSE).
 
 ---
 
