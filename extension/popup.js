@@ -1,37 +1,33 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const saveButton = document.getElementById('saveAuthors');
-  const autoFillButton = document.getElementById('autoFillAuthors');
-  const profileButtons = document.querySelectorAll('.profile-button');
-  let activeProfile = 'profile1'; // Default active profile
-
-  // Save Authors to chrome.storage for the active profile
-  saveButton.addEventListener('click', () => {
+$(document).ready(function() {
+  let activeProfile = 'profile1'; 
+  
+  $('#saveAuthors').on('click', function() {
     const authors = [];
     for (let i = 1; i <= 4; i++) {
       authors.push({
-        email: document.getElementById(`email${i}`).value,
-        name: document.getElementById(`name${i}`).value,
-        surname: document.getElementById(`surname${i}`).value,
-        organization: document.getElementById(`organization${i}`).value,
-        country: document.getElementById(`country${i}`).value,
+        email: $(`#email${i}`).val(),
+        name: $(`#name${i}`).val(),
+        surname: $(`#surname${i}`).val(),
+        organization: $(`#organization${i}`).val(),
+        country: $(`#country${i}`).val(),
       });
     }
-    chrome.storage.sync.set({ [activeProfile]: authors }, () => {
+    chrome.storage.sync.set({ [activeProfile]: authors }, function() {
       alert(`Authors saved for ${activeProfile}!`);
     });
   });
 
-  // Load Authors from chrome.storage for the active profile
+ 
   function loadProfile(profile) {
-    chrome.storage.sync.get([profile], (result) => {
+    chrome.storage.sync.get([profile], function(result) {
       if (result[profile] && result[profile].length > 0) {
-        result[profile].forEach((author, index) => {
+        result[profile].forEach(function(author, index) {
           const i = index + 1;
-          document.getElementById(`email${i}`).value = author.email || '';
-          document.getElementById(`name${i}`).value = author.name || '';
-          document.getElementById(`surname${i}`).value = author.surname || '';
-          document.getElementById(`organization${i}`).value = author.organization || '';
-          document.getElementById(`country${i}`).value = author.country || '';
+          $(`#email${i}`).val(author.email || '');
+          $(`#name${i}`).val(author.name || '');
+          $(`#surname${i}`).val(author.surname || '');
+          $(`#organization${i}`).val(author.organization || '');
+          $(`#country${i}`).val(author.country || '');
         });
         console.log(`Loaded ${profile}`);
       } else {
@@ -41,33 +37,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Clear all fields
   function clearFields() {
     for (let i = 1; i <= 4; i++) {
-      document.getElementById(`email${i}`).value = '';
-      document.getElementById(`name${i}`).value = '';
-      document.getElementById(`surname${i}`).value = '';
-      document.getElementById(`organization${i}`).value = '';
-      document.getElementById(`country${i}`).value = '';
+      $(`#email${i}`).val('');
+      $(`#name${i}`).val('');
+      $(`#surname${i}`).val('');
+      $(`#organization${i}`).val('');
+      $(`#country${i}`).val('');
     }
   }
 
-  // Add event listeners to profile buttons
-  profileButtons.forEach((button) => {
-    button.addEventListener('click', (event) => {
-      activeProfile = event.target.dataset.profile;
-      loadProfile(activeProfile);
+  $('.profile-button').on('click', function() {
+    activeProfile = $(this).data('profile');
+    loadProfile(activeProfile);
+  });
+
+  $('#autoFillAuthors').on('click', function() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'autoFillAuthors', profile: activeProfile });
     });
   });
 
-  // Send a message to content script to auto-fill authors
-  autoFillButton.addEventListener('click', () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'autoFillAuthors', profile: activeProfile });
-    });
-});
-
-
-  // Load default profile on page load
+  
   loadProfile(activeProfile);
 });
