@@ -2,7 +2,7 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 20px;
-  width: 450px;
+  width: 480px;
   background-color: #f3f3f3;
   box-sizing: border-box;
   color: #333;
@@ -19,7 +19,8 @@ h1 {
 
 h2 {
   font-size: 16px;
-  margin-top: 20px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   color: #333;
   padding-left: 5px;
   border-left: 3px solid #0078d7;
@@ -72,6 +73,26 @@ button:hover {
   border: 1px solid #ddd;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.author-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.remove-author {
+  margin-top: 0;
+  padding: 5px 10px;
+  background-color: #f44336;
+  color: white;
+  font-size: 12px;
+}
+
+.remove-author:hover {
+  background-color: #d32f2f;
 }
 
 #profileButtons {
@@ -91,16 +112,35 @@ button:hover {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.profile-button:hover {
+.profile-button:hover, .profile-button.active {
   background-color: #0078d7;
   color: #fff;
 }
 
-#saveAuthors {
-  width: 100%;
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+#saveAuthors, #addAuthor {
+  flex: 1;
 }
 
 #autoFillAuthors {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  background-color: #4caf50;
+}
+
+#autoFillAuthors:hover {
+  background-color: #388e3c;
+}
+
+#addAuthor {
+  background-color: #ff9800;
+}
+
+#addAuthor:hover {
+  background-color: #f57c00;
 }
