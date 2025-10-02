@@ -52,6 +52,57 @@ $(document).ready(function() {
     addAuthor();
   }
 
+
+  function addAuthor(authorData = {}) {
+    const template = document.getElementById('authorTemplate');
+    const authorElement = document.importNode(template.content, true);
+    const authorIndex = $('#authorFields').children().length + 1;
+    
+    $(authorElement).find('.author-number').text(authorIndex);
+    
+    const authorContainer = $(authorElement).find('.author');
+    authorContainer.attr('data-author-index', authorIndex);
+    
+    if (authorData) {
+      $(authorElement).find('.author-email').val(authorData.email || '');
+      $(authorElement).find('.author-name').val(authorData.name || '');
+      $(authorElement).find('.author-surname').val(authorData.surname || '');
+      $(authorElement).find('.author-organization').val(authorData.organization || '');
+      $(authorElement).find('.author-country').val(authorData.country || '');
+    }
+    
+    $('#authorFields').append(authorElement);
+    
+    updateAuthorNumbers();
+  }
+
+// 1) Implement clear-all
+function clearAuthors({ keepOneBlank = true } = {}) {
+  const $wrap = $('#authorFields');
+  $wrap.empty();
+
+  if (keepOneBlank) {
+    addAuthor(); // re-add a fresh blank form
+  }
+
+  updateAuthorNumbers();
+}
+
+// 2) Button handler
+$('#clearAllBtn').on('click', function () {
+  // optional confirm — remove if you don't want the prompt
+  if (!confirm('Clear all authors from the form?')) return;
+  clearAuthors({ keepOneBlank: true });
+});
+  
+  function updateAuthorNumbers() {
+    $('.author').each(function(index) {
+      $(this).attr('data-author-index', index + 1);
+      $(this).find('.author-number').text(index + 1);
+    });
+  }
+
+
   $('#addAuthor').on('click', function() {
     addAuthor();
   });
