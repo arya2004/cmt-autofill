@@ -27,6 +27,25 @@ $(document).ready(function() {
     
     updateAuthorNumbers();
   }
+
+// 1) Implement clear-all
+function clearAuthors({ keepOneBlank = true } = {}) {
+  const $wrap = $('#authorFields');
+  $wrap.empty();
+
+  if (keepOneBlank) {
+    addAuthor(); // re-add a fresh blank form
+  }
+
+  updateAuthorNumbers();
+}
+
+// 2) Button handler
+$('#clearAllBtn').on('click', function () {
+  // optional confirm — remove if you don't want the prompt
+  if (!confirm('Clear all authors from the form?')) return;
+  clearAuthors({ keepOneBlank: true });
+});
   
   function updateAuthorNumbers() {
     $('.author').each(function(index) {
