@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Extension Settings</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    input, select {
+      margin-bottom: 15px;
+      padding: 5px;
+      width: 200px;
+    }
+    button {
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Extension Settings</h2>
+
+  <label for="profileCount">Number of Profiles:</label>
+  <select id="profileCount">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+  </select>
+
+  <br>
+
+  <label for="profileName">Profile Name:</label>
+  <input type="text" id="profileName" placeholder="Enter profile name">
+
+  <br>
+  <button id="save">Save Settings</button>
+  <p id="status"></p>
+
+  <script src="options.js"></script>
+</body>
+</html>
