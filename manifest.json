@@ -15,5 +15,9 @@
       "matches": ["<all_urls>"],
       "js": ["extension/contentScript.js"]
     }
-  ]
+  ],
+  "options_ui": {
+    "page": "extension/options.html",
+    "open_in_tab": true
+  }
 }
