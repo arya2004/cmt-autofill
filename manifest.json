@@ -12,7 +12,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["https://cmt3.research.microsoft.com/*/*"],
       "js": ["extension/contentScript.js"]
     }
   ],
