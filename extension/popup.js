@@ -51,6 +51,13 @@ $(document).ready(function() {
   if ($('#authorFields').children().length === 0) {
     addAuthor();
   }
+  $('.profile-button').on('click', function() {
+  activeProfile = $(this).data('profile');
+  loadProfile(activeProfile);
+  
+  $('.profile-button').removeClass('active');
+  $(this).addClass('active');
+});
 
 
   function addAuthor(authorData = {}) {
