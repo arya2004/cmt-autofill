@@ -1,3 +1,14 @@
+const SELECTORS = {
+  ADD_AUTHOR_BUTTON: 'button[data-bind*="showDialog(true)"]',
+  AUTHOR_FORM: 'form[data-bind*="submit: function () { $parent.addAuthor($data); }"]',
+  EMAIL_INPUT: 'input[data-bind*="value: email"]',
+  FIRST_NAME_INPUT: 'input[data-bind*="value: firstName"]',
+  LAST_NAME_INPUT: 'input[data-bind*="value: lastName"]',
+  ORGANIZATION_INPUT: 'input[data-bind*="value: organization"]',
+  COUNTRY_DROPDOWN: 'select[data-bind*="value: countryCode"]',
+  SUBMIT_BUTTON: 'button[type="submit"]'
+};
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'autoFillAuthors') {
     const profileKey = request.profile || 'profile1'; // Default to profile1 if not specified
@@ -36,7 +47,7 @@ function fillAuthorsSequentially(authors) {
     }
 
     const author = authors[index];
-    const addButton = document.querySelector('button[data-bind*="showDialog(true)"]');
+    const addButton = document.querySelector(SELECTORS.ADD_AUTHOR_BUTTON);
 
     if (!addButton) {
       console.error('CMT Autofill: Could not find "Add Author" button.');
@@ -47,19 +58,19 @@ function fillAuthorsSequentially(authors) {
     console.log(`Clicked Add button for Author ${index + 1}`);
     
     setTimeout(async () => {
-      const form = document.querySelector('form[data-bind*="submit: function () { $parent.addAuthor($data); }"]');
+      const form = document.querySelector(SELECTORS.AUTHOR_FORM);
 
       if (!form) {
         console.error('CMT Autofill: Could not find author form.');
         return;
       }
 
-      const emailField = form.querySelector('input[data-bind*="value: email"]');
-      const firstNameField = form.querySelector('input[data-bind*="value: firstName"]');
-      const lastNameField = form.querySelector('input[data-bind*="value: lastName"]');
-      const organizationField = form.querySelector('input[data-bind*="value: organization"]');
-      const countryDropdown = form.querySelector('select[data-bind*="value: countryCode"]');
-      const submitButton = form.querySelector('button[type="submit"]');
+      const emailField = form.querySelector(SELECTORS.EMAIL_INPUT);
+      const firstNameField = form.querySelector(SELECTORS.FIRST_NAME_INPUT);
+      const lastNameField = form.querySelector(SELECTORS.LAST_NAME_INPUT);
+      const organizationField = form.querySelector(SELECTORS.ORGANIZATION_INPUT);
+      const countryDropdown = form.querySelector(SELECTORS.COUNTRY_DROPDOWN);
+      const submitButton = form.querySelector(SELECTORS.SUBMIT_BUTTON);
 
       if (!emailField) {
         console.error('CMT Autofill: Could not find email field.');
