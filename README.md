@@ -1,13 +1,13 @@
 # CMT Author Auto-Fill Chrome Extension
 
 
-A Chrome extension that automates the process of filling author details in the Microsoft Conference Management Toolkit (CMT). This tool allows users to save, load, and auto-fill up to 4 authors' information (Email, First Name, Last Name, Organization, and Country) into the CMT form.
+A Chrome extension that automates the process of filling author details in the Microsoft Conference Management Toolkit (CMT). This tool allows users to save, load, and auto-fill information (Email, First Name, Last Name, Organization, and Country) for a large number of authors into the CMT form.
 
 ---
 
 ## **Features**
 
-- **Save Author Details**: Save up to 4 authors' information for reuse.
+- **Save Author Details**: Store the details for a large number of authors for quick reuse.
 - **Load Author Details**: Load saved author information into the extension.
 - **Auto-Fill Form**: Automatically fill the author details sequentially in the CMT form with a single click.
 - **Modern UI**: A user-friendly and responsive popup interface.
@@ -62,7 +62,7 @@ This screenshot shows the auto-filled author details in the CMT submission form 
 
 ### **Step 1: Save Author Details**
 - Click the extension icon to open the popup.
-- Fill in the author details (Email, First Name, Last Name, Organization, and Country) for up to 4 authors.
+- Fill in the author details (Email, First Name, Last Name, Organization, and Country).
 - Click the **Save Authors** button to store the information.
 
 ### **Step 2: Load Saved Details**
@@ -88,6 +88,31 @@ Each author includes the following details:
 - **Country**
 
 ---
+
+## **Contributing**
+We appreciate any contribution to enhance this project! If you're reporting a bug, proposing a new feature, or enhancing the documentation, your assistance is valued.
+
+### **Getting Started Locally**
+
+1. **Fork** the repository and then **clone** it to your local machine:
+   
+   ```bash
+    git clone https://github.com/arya2004/cmt-autofill.git
+    cd cmt-autofill
+    ```
+3. Install any dependencies if required (not applicable for this project yet).
+4. **Load the Extension in Chrome**:
+    - Navigate to `chrome://extensions/`.
+    - Enable **Developer Mode** (top right corner).
+    - Click **Load unpacked**
+    - Select the root folder of the project you just cloned
+5. Make your changes, save the files, and refresh the extension in Chrome to see your updates in action.
+
+### **Finding your First Issue**
+A great way to start is by looking for beginner-friendly issues. Check our issues tab for anything with the [**good first issue**](https://github.com/arya2004/cmt-autofill/labels/good%20first%20issue) label.
+These issues are specifically curated to be approachable and often include guidance or extra context to help you get started.
+
+For detailed instructions on how to get started, please see our [**Contributing Guide**](./CONTRIBUTING.md).
 
 ## **License**
 
