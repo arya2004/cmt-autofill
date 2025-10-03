@@ -1,5 +1,24 @@
 // extension/popup.js
 
+function populateCountrySelect(selectEl) {
+  // Clear existing options and add placeholder
+  selectEl.innerHTML = '';
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = 'Select Country';
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  selectEl.appendChild(placeholder);
+
+  // Adding all countries dynamically
+  COUNTRY_LIST.forEach(country => {
+    const option = document.createElement('option');
+    option.value = country.code;       // ISO code
+    option.textContent = country.name; // visible name
+    selectEl.appendChild(option);
+  });
+}
+
 // Move these functions to top-level scope
 function addAuthor(authorData = {}) {
   const template = document.getElementById('authorTemplate');
@@ -9,6 +28,8 @@ function addAuthor(authorData = {}) {
   $(authorElement).find('.author-number').text(authorIndex);
 
   const authorContainer = $(authorElement).find('.author');
+  const countrySelect = authorContainer.find('.author-country')[0]; // get the DOM element
+  populateCountrySelect(countrySelect);
   authorContainer.attr('data-author-index', authorIndex);
 
   if (authorData) {
@@ -46,34 +67,10 @@ function loadProfile(profile) {
 
 // Now wrap the DOM-ready logic
 $(document).ready(function() {
-  let activeProfile = 'profile1'; 
+  let activeProfile = 'profile1';
 
   if ($('#authorFields').children().length === 0) {
     addAuthor();
-  }
-
-
-  function addAuthor(authorData = {}) {
-    const template = document.getElementById('authorTemplate');
-    const authorElement = document.importNode(template.content, true);
-    const authorIndex = $('#authorFields').children().length + 1;
-    
-    $(authorElement).find('.author-number').text(authorIndex);
-    
-    const authorContainer = $(authorElement).find('.author');
-    authorContainer.attr('data-author-index', authorIndex);
-    
-    if (authorData) {
-      $(authorElement).find('.author-email').val(authorData.email || '');
-      $(authorElement).find('.author-name').val(authorData.name || '');
-      $(authorElement).find('.author-surname').val(authorData.surname || '');
-      $(authorElement).find('.author-organization').val(authorData.organization || '');
-      $(authorElement).find('.author-country').val(authorData.country || '');
-    }
-    
-    $('#authorFields').append(authorElement);
-    
-    updateAuthorNumbers();
   }
 
 // 1) Implement clear-all
