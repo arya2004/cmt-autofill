@@ -9,6 +9,14 @@ const SELECTORS = {
   SUBMIT_BUTTON: 'button[type="submit"]'
 };
 
+// Helper function to extract author names from the page
+// This function was missing. I've added it back here.
+function getAuthorsFromPage() {
+  const authorElements = document.querySelectorAll('.author-name'); // Adjust selector if needed
+  const authors = Array.from(authorElements).map(el => el.textContent.trim());
+  return authors;
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'autoFillAuthors') {
     const profileKey = request.profile || 'profile1'; // Default to profile1 if not specified
@@ -125,3 +133,7 @@ function fillAuthorsSequentially(authors) {
 
   processNextAuthor();
 }
+
+
+// This line should now work correctly
+module.exports = { setKnockoutValue, getAuthorsFromPage };
