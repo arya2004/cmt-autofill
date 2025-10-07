@@ -19,8 +19,12 @@ global.chrome = {
   }
 };
 
-// Import functions from popup.js
+// Import functions from popup.js and countries.js
 const { addAuthor, updateAuthorNumbers, loadProfile } = require('./popup.js');
+const { populateCountryDropdown } = require('./countries.js');
+
+// Make populateCountryDropdown available globally
+global.populateCountryDropdown = populateCountryDropdown;
 
 beforeEach(() => {
   // Clear DOM before each test
@@ -33,7 +37,7 @@ beforeEach(() => {
         <input class="author-name"/>
         <input class="author-surname"/>
         <input class="author-organization"/>
-        <input class="author-country"/>
+        <select class="author-country"></select>
         <button class="remove-author">Remove</button>
       </div>
     </template>
@@ -61,6 +65,14 @@ describe("Popup.js functions", () => {
     const spy = jest.spyOn(chrome.storage.sync, "get");
     loadProfile("profile1");
     expect(spy).toHaveBeenCalledWith(["profile1"], expect.any(Function));
+  });
+
+  test("addAuthor should populate country dropdown", () => {
+    addAuthor();
+    const countrySelect = document.querySelector(".author-country");
+    expect(countrySelect.children.length).toBeGreaterThan(0);
+    expect(countrySelect.children[0].value).toBe("");
+    expect(countrySelect.children[0].textContent).toBe("Select...");
   });
 
 });

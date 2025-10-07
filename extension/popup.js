@@ -11,6 +11,10 @@ function addAuthor(authorData = {}) {
   const authorContainer = $(authorElement).find('.author');
   authorContainer.attr('data-author-index', authorIndex);
 
+  // Populate country dropdown dynamically
+  const countrySelect = $(authorElement).find('.author-country');
+  populateCountryDropdown(countrySelect);
+
   if (authorData) {
     $(authorElement).find('.author-email').val(authorData.email || '');
     $(authorElement).find('.author-name').val(authorData.name || '');
@@ -69,6 +73,10 @@ $(document).ready(function() {
     
     const authorContainer = $(authorElement).find('.author');
     authorContainer.attr('data-author-index', authorIndex);
+    
+    // Populate country dropdown dynamically
+    const countrySelect = $(authorElement).find('.author-country');
+    populateCountryDropdown(countrySelect);
     
     if (authorData) {
       $(authorElement).find('.author-email').val(authorData.email || '');
