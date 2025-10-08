@@ -120,3 +120,60 @@ if (typeof module !== "undefined" && module.exports) {
     // You can export other functions if you need to test them in isolation
   };
 }
+
+
+$(document).ready(function() {
+  let authorCount = 0;
+
+  // --- Main function to add a new author form ---
+  function addAuthor() {
+    authorCount++;
+
+    // Clone the template's content
+    const newAuthor = $('#authorTemplate').contents().clone();
+
+    // Set the author number in the header
+    newAuthor.find('.author-number').text(authorCount);
+
+    // Find the <select> element within the new author section
+    const countrySelect = newAuthor.find('.author-country');
+
+    // --- Dynamically load countries into the dropdown ---
+    // Use jQuery's $.each to loop through the COUNTRIES array
+    $.each(COUNTRIES, function(index, country) {
+      // Create a new <option> and append it to the select element
+      countrySelect.append($('<option>', {
+        value: country.value,
+        text: country.name
+      }));
+    });
+
+    // Append the fully constructed author form to the container
+    $('#authorFields').append(newAuthor);
+  }
+
+
+  // --- Event Listeners ---
+
+  // Add author when the button is clicked
+  $('#addAuthor').on('click', addAuthor);
+
+  // Use event delegation for the "Remove" button since authors are added dynamically
+  $('#authorFields').on('click', '.remove-author', function() {
+    // Find the parent .author element and remove it
+    $(this).closest('.author').remove();
+    // Note: Re-numbering authors after removal can be added here if needed
+  });
+
+  // Clear all authors
+  $('#clearAllBtn').on('click', function() {
+    $('#authorFields').empty();
+    authorCount = 0; // Reset counter
+  });
+
+
+  // --- Initial State ---
+  // Add the first author by default when the popup opens
+  addAuthor();
+
+});

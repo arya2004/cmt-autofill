@@ -1,6 +1,6 @@
 // Country list for CMT Author Auto-Fill extension
 const COUNTRIES = [
-  { value: "", name: "Select..." },
+  { value: "", name: "Select a country..." },
   { value: "AF", name: "Afghanistan" },
   { value: "AX", name: "Åland Islands" },
   { value: "AL", name: "Albania" },
@@ -241,7 +241,7 @@ const COUNTRIES = [
   { value: "UG", name: "Uganda" },
   { value: "UA", name: "Ukraine" },
   { value: "AE", name: "United Arab Emirates" },
-  { value: "UK", name: "United Kingdom" },
+  { value: "GB", name: "United Kingdom" },
   { value: "US", name: "United States" },
   { value: "UY", name: "Uruguay" },
   { value: "UZ", name: "Uzbekistan" },
@@ -254,22 +254,3 @@ const COUNTRIES = [
   { value: "ZM", name: "Zambia" },
   { value: "ZW", name: "Zimbabwe" }
 ];
-
-// Function to populate country dropdown
-function populateCountryDropdown(selectElement) {
-  // Clear existing options
-  selectElement.empty();
-  
-  // Add all countries
-  COUNTRIES.forEach(country => {
-    const option = $('<option></option>');
-    option.attr('value', country.value);
-    option.text(country.name);
-    selectElement.append(option);
-  });
-}
-
-// Export for use in other files
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = { COUNTRIES, populateCountryDropdown };
-}
