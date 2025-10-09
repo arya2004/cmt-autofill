@@ -1,179 +1,206 @@
 // extension/popup.js
 
-// Global state
-let activeProfile = 'profile1';
-
-// Function to add a new author form
-function addAuthor(authorData = {}) {
-  const template = document.getElementById('authorTemplate');
-  if (!template) return; // Guard clause
-  const authorElement = document.importNode(template.content, true);
-
-  const countrySelect = $(authorElement).find('.author-country');
-  populateCountryDropdown(countrySelect);
-
-  if (authorData) {
-    $(authorElement).find('.author-email').val(authorData.email || '');
-    $(authorElement).find('.author-name').val(authorData.name || '');
-    $(authorElement).find('.author-surname').val(authorData.surname || '');
-    $(authorElement).find('.author-organization').val(authorData.organization || '');
-    countrySelect.val(authorData.country || '');
-  }
-
-  $('#authorFields').append(authorElement);
-  updateAuthorNumbers();
-}
-
-// Function to update author numbers
-function updateAuthorNumbers() {
-  $('.author').each(function(index) {
-    $(this).find('.author-number').text(index + 1);
-  });
-}
-
-// Function to load a profile from storage
-function loadProfile(profile) {
-  chrome.storage.sync.get([profile], function(result) {
-    $('#authorFields').empty();
-    const authors = result[profile];
-    if (authors && authors.length > 0) {
-      authors.forEach(addAuthor);
-    } else {
-      addAuthor(); // If profile is empty, add one blank author form
-    }
-  });
-}
-
-// Function to clear author forms
-function clearAuthors({ keepOneBlank = true } = {}) {
-  $('#authorFields').empty();
-  if (keepOneBlank) {
-    addAuthor();
-  }
-}
-
-// Main initialization function that sets up event listeners
-function initializePopup() {
-  // Set initial active profile button
-  $(`.profile-button[data-profile="${activeProfile}"]`).addClass('active');
-
-  // Load the initial profile, which adds the first author form
-  loadProfile(activeProfile);
-
-  // --- Event Listeners ---
-  $('#addAuthor').on('click', () => addAuthor());
-
-  $('#clearAllBtn').on('click', () => {
-    if (confirm('Clear all authors from the form?')) {
-      clearAuthors({ keepOneBlank: true });
-    }
-  });
-
-  $('#authorFields').on('click', '.remove-author', function() {
-    if ($('.author').length > 1) {
-      $(this).closest('.author').remove();
-      updateAuthorNumbers();
-    } else {
-      alert('You must have at least one author.');
-    }
-  });
-
-  $('#saveAuthors').on('click', () => {
-    const authors = [];
-    $('.author').each(function() {
-      authors.push({
-        email: $(this).find('.author-email').val(),
-        name: $(this).find('.author-name').val(),
-        surname: $(this).find('.author-surname').val(),
-        organization: $(this).find('.author-organization').val(),
-        country: $(this).find('.author-country').val(),
-      });
-    });
-    chrome.storage.sync.set({ [activeProfile]: authors }, () => {
-      alert(`Authors saved for ${activeProfile}!`);
-    });
-  });
-
-  $('.profile-button').on('click', function() {
-    activeProfile = $(this).data('profile');
-    $('.profile-button').removeClass('active');
-    $(this).addClass('active');
-    loadProfile(activeProfile);
-  });
-
-  $('#autoFillAuthors').on('click', () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]) {
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'autoFillAuthors', profile: activeProfile });
-      }
-    });
-  });
-}
-
-// This runs the initialization when the DOM is ready in the actual extension
-$(document).ready(initializePopup);
-
-// Export functions for Jest testing
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = {
-    initializePopup,
-    // You can export other functions if you need to test them in isolation
-  };
-}
-
-
-$(document).ready(function() {
+(() => {
+  // --- Private State ---
+  let activeProfile = 'profile1';
   let authorCount = 0;
 
-  // --- Main function to add a new author form ---
-  function addAuthor() {
-    authorCount++;
+  // Example countries array - replace with actual international data as needed
+  const COUNTRIES = [
+    { value: 'USA', name: 'United States' },
+    { value: 'IN', name: 'India' },
+    { value: 'UK', name: 'United Kingdom' },
+    { value: 'DE', name: 'Germany' },
+    { value: 'FR', name: 'France' }
+  ];
 
-    // Clone the template's content
-    const newAuthor = $('#authorTemplate').contents().clone();
-
-    // Set the author number in the header
-    newAuthor.find('.author-number').text(authorCount);
-
-    // Find the <select> element within the new author section
-    const countrySelect = newAuthor.find('.author-country');
-
-    // --- Dynamically load countries into the dropdown ---
-    // Use jQuery's $.each to loop through the COUNTRIES array
-    $.each(COUNTRIES, function(index, country) {
-      // Create a new <option> and append it to the select element
-      countrySelect.append($('<option>', {
-        value: country.value,
-        text: country.name
-      }));
-    });
-
-    // Append the fully constructed author form to the container
-    $('#authorFields').append(newAuthor);
+  // --- UI Message System ---
+  function showStatusMessage(message, duration = 3000) {
+    const $status = $('#statusMessage');
+    if (!$status.length) {
+      $('<div id="statusMessage" style="position:fixed;bottom:10px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 16px;border-radius:4px;font-size:14px;z-index:1000;opacity:0;transition:opacity 0.2s;"></div>')
+        .appendTo('body');
+    }
+    const $elem = $('#statusMessage');
+    $elem.text(message).css('opacity', 0).show().animate({ opacity: 1 }, 200);
+    setTimeout(() => $elem.animate({ opacity: 0 }, 200, () => $elem.hide()), duration);
   }
 
+  // --- Core Functions ---
 
-  // --- Event Listeners ---
+  // Populate country dropdown
+  function populateCountryDropdown($select) {
+    $select.empty().append('<option value="">Select Country</option>');
+    COUNTRIES.forEach(country => {
+      $select.append(new Option(country.name, country.value));
+    });
+  }
 
-  // Add author when the button is clicked
-  $('#addAuthor').on('click', addAuthor);
+  // Add a new author form (with optional data)
+  function addAuthor(authorData = null) {
+    authorCount++;
+    
+    // Import template content
+    const template = document.getElementById('authorTemplate');
+    if (!template) {
+      console.error('Author template not found');
+      return;
+    }
+    
+    const fragment = document.importNode(template.content, true);
+    const $author = $(fragment);
+    
+    // Set author number
+    $author.find('.author-number').text(authorCount);
+    
+    // Populate country dropdown
+    const $countrySelect = $author.find('.author-country');
+    populateCountryDropdown($countrySelect);
+    
+    // Fill in data if provided
+    if (authorData) {
+      $author.find('.author-email').val(authorData.email || '');
+      $author.find('.author-name').val(authorData.name || '');
+      $author.find('.author-surname').val(authorData.surname || '');
+      $author.find('.author-organization').val(authorData.organization || '');
+      if (authorData.country) $countrySelect.val(authorData.country);
+    }
+    
+    // Append to DOM
+    $('#authorFields').append($author);
+  }
 
-  // Use event delegation for the "Remove" button since authors are added dynamically
-  $('#authorFields').on('click', '.remove-author', function() {
-    // Find the parent .author element and remove it
-    $(this).closest('.author').remove();
-    // Note: Re-numbering authors after removal can be added here if needed
-  });
+  // Update author numbers after removal
+  function updateAuthorNumbers() {
+    authorCount = 0;
+    $('.author').each(function () {
+      authorCount++;
+      $(this).find('.author-number').text(authorCount);
+    });
+  }
+
+  // Load profile from chrome storage
+  function loadProfile(profile) {
+    chrome.storage.sync.get([profile], (result) => {
+      const $container = $('#authorFields');
+      $container.empty();
+      authorCount = 0;
+      
+      const authors = result[profile];
+      if (authors && Array.isArray(authors) && authors.length > 0) {
+        authors.forEach(addAuthor);
+      } else {
+        addAuthor(); // Always show at least one author
+      }
+    });
+  }
 
   // Clear all authors
-  $('#clearAllBtn').on('click', function() {
-    $('#authorFields').empty();
-    authorCount = 0; // Reset counter
-  });
+  function clearAuthors() {
+    if (confirm('Clear all authors from the form?')) {
+      $('#authorFields').empty();
+      authorCount = 0;
+      addAuthor(); // Add one blank author
+      showStatusMessage('All authors cleared');
+    }
+  }
 
+  // Save authors to current profile
+  function saveAuthors() {
+    const authors = [];
+    $('.author').each(function () {
+      const $author = $(this);
+      authors.push({
+        email: $author.find('.author-email').val().trim(),
+        name: $author.find('.author-name').val().trim(),
+        surname: $author.find('.author-surname').val().trim(),
+        organization: $author.find('.author-organization').val().trim(),
+        country: $author.find('.author-country').val() || ''
+      });
+    });
+    
+    chrome.storage.sync.set({ [activeProfile]: authors }, () => {
+      showStatusMessage(`Authors saved to ${activeProfile}!`);
+    });
+  }
 
-  // --- Initial State ---
-  // Add the first author by default when the popup opens
-  addAuthor();
+  // Auto-fill on active tab
+  function autoFillAuthors() {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        chrome.tabs.sendMessage(tabs[0].id, { 
+          action: 'autoFillAuthors', 
+          profile: activeProfile 
+        }, (response) => {
+          if (chrome.runtime.lastError) {
+            showStatusMessage('Error: CMT page not found or invalid');
+          } else {
+            showStatusMessage('Auto-fill started');
+          }
+        });
+      }
+    });
+  }
 
-});
+  // --- Initialization ---
+  function initializePopup() {
+    // Set active profile button
+    $(`.profile-button[data-profile="${activeProfile}"]`).addClass('active');
+    
+    // Load profile (this will add the default author)
+    loadProfile(activeProfile);
+
+    // --- Event Listeners ---
+    
+    // Add new author
+    $('#addAuthor').on('click', () => {
+      addAuthor();
+    });
+
+    // Remove author with confirmation if last one
+    $('#authorFields').on('click', '.remove-author', function () {
+      if ($('.author').length > 1) {
+        $(this).closest('.author').remove();
+        updateAuthorNumbers();
+        showStatusMessage('Author removed');
+      } else {
+        showStatusMessage('At least one author is required');
+      }
+    });
+
+    // Clear all authors
+    $('#clearAllBtn').on('click', clearAuthors);
+
+    // Save authors
+    $('#saveAuthors').on('click', saveAuthors);
+
+    // Switch profile
+    $('.profile-button').on('click', function () {
+      activeProfile = $(this).data('profile');
+      $('.profile-button').removeClass('active');
+      $(this).addClass('active');
+      loadProfile(activeProfile);
+      showStatusMessage(`Switched to ${activeProfile}`);
+    });
+
+    // Auto-fill
+    $('#autoFillAuthors').on('click', autoFillAuthors);
+  }
+
+  // Initialize on DOM ready
+  $(document).ready(initializePopup);
+
+  // Export for testing
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+      initializePopup,
+      addAuthor,
+      updateAuthorNumbers,
+      loadProfile,
+      clearAuthors,
+      saveAuthors,
+      autoFillAuthors,
+      showStatusMessage
+    };
+  }
+})();
