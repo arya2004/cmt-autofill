@@ -23,11 +23,18 @@
 
   // --- Core Functions ---
 
+  // Populate country dropdown
+  function populateCountryDropdown($select) {
+    $select.empty().append('<option value="">Select Country</option>');
+    COUNTRIES.forEach((country) => {
+      $select.append(new Option(country.name, country.value));
+    });
+  }
+
   // Add a new author form (with optional data)
   function addAuthor(authorData = null) {
     authorCount++;
 
-    // Import template content
     const template = document.getElementById("authorTemplate");
     if (!template) {
       console.error("Author template not found");
@@ -40,19 +47,24 @@
     // Set author number
     $author.find(".author-number").text(authorCount);
 
-    // Populate country dropdown
     const $countrySelect = $author.find(".author-country");
 
-    // Fill in data if provided
+    // Populate country dropdown the same way your existing countries.js or script does
+    populateCountryDropdown($countrySelect); // Your existing function to fill countries
+
+    // Set the saved value after populating dropdown to ensure it's selected
+    if (authorData && authorData.country) {
+      $countrySelect.val(authorData.country);
+    }
+
+    // Set other fields
     if (authorData) {
       $author.find(".author-email").val(authorData.email || "");
       $author.find(".author-name").val(authorData.name || "");
       $author.find(".author-surname").val(authorData.surname || "");
       $author.find(".author-organization").val(authorData.organization || "");
-      if (authorData.country) $countrySelect.val(authorData.country);
     }
 
-    // Append to DOM
     $("#authorFields").append($author);
   }
 
