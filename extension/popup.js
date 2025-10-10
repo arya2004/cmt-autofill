@@ -5,6 +5,33 @@
   let activeProfile = "profile1";
   let authorCount = 0;
 
+  function renderProfileButtons() {
+    chrome.storage.sync.get("profiles", (data) => {
+      const profiles = data.profiles || { profile1: "Profile 1" };
+      const container = $("#profileButtons");
+      container.empty();
+      Object.entries(profiles).forEach(([key, name]) => {
+        container.append(
+          `<button class="profile-button" data-profile="${key}">${name}</button>`
+        );
+      });
+
+      // Attach event listeners
+      $(".profile-button")
+        .off("click")
+        .on("click", function () {
+          activeProfile = $(this).data("profile");
+          $(".profile-button").removeClass("active");
+          $(this).addClass("active");
+          loadProfile(activeProfile);
+          showStatusMessage(`Switched to ${activeProfile}`);
+        });
+
+      // Set active button visually
+      $(`.profile-button[data-profile="${activeProfile}"]`).addClass("active");
+    });
+  }
+
   // --- UI Message System ---
   function showStatusMessage(message, duration = 3000) {
     const $status = $("#statusMessage");
@@ -190,7 +217,11 @@
   }
 
   // Initialize on DOM ready
-  $(document).ready(initializePopup);
+  jQuery(function() {
+    renderProfileButtons();
+    // Your existing initialization code here (loadProfile etc.)
+    initializePopup();
+  });
 
   // Export for testing
   if (typeof module !== "undefined" && module.exports) {
