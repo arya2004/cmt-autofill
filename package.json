@@ -16,14 +16,12 @@
     "test": "npm run build && node --test scripts/*.test.mjs"
   },
   "dependencies": {
-    "jquery": "^3.7.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/chrome": "^0.1.24",
-    "@types/jquery": "^3.5.33",
     "@types/node": "^24.10.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
