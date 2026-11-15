@@ -6,11 +6,11 @@ A Chrome extension that automates the process of filling author details in the M
 
 ## **Features**
 
-- **Named Profiles**: Create, rename, delete, and select separate author lists.
+- **Profiles**: Up to four numbered author lists, added with `+`.
 - **Save Author Details**: Save validated author information for reuse.
 - **Load Author Details**: Load saved author information into the extension.
 - **Auto-Fill Form**: Automatically fill the author details sequentially in the CMT form with a single click.
-- **Modern UI**: A user-friendly and responsive popup interface.
+- **React Interface**: Collapsible author cards, inline validation, and visible save/fill actions.
 
 ---
 
@@ -72,15 +72,18 @@ This screenshot shows the auto-filled author details in the CMT submission form 
 - Click the extension icon to open the popup.
 - Fill in Email, First Name, Last Name, Organization, and Country for each author.
 - All fields are required. Emails must be valid and unique within the profile.
-- Click the **Save Authors** button to store the information.
+- Click the **Save** button to store the information.
 
 ### **Step 2: Load Saved Details**
 
 - Saved authors load automatically when you open the popup or select a profile.
-- Use the profile selector to switch author lists. Enter a name and click **Create**
-  to start another list, or **Rename** to change the selected profile name.
-- **Delete** removes the selected profile after confirmation. At least one profile
-  must remain. Switching or creating profiles prompts before discarding unsaved authors.
+- Select a numbered profile or press **+** to add one (four maximum). The trash
+  control deletes the selected profile after confirmation; one profile must remain.
+- Tap an author to expand its editor. **+ Add** creates another author (five maximum).
+- Editors expand and collapse with short animations that respect reduced motion.
+  All five authors and the save/fill controls fit without scrolling.
+- Save changes to enable **Fill authors**. Switching profiles prompts before
+  discarding unsaved changes.
 
 ### **Step 3: Auto-Fill Form**
 
@@ -133,7 +136,7 @@ bundles on disk, without a development server or hot reload.
 
 Source layout:
 
-- `src/popup/`: React entry, popup components, styles, and temporary jQuery bridge.
+- `src/popup/`: React entry, popup state hook, reusable components, and styles.
 - `src/storage/`: Versioned v2 profiles and Chrome sync storage error handling.
 - `src/shared/`: Profile/author models and validation shared by popup and CMT integration.
 - `src/config/`: Application settings and CMT country options.
@@ -143,9 +146,8 @@ Source layout:
 
 The build follows [Vite's production build modes](https://vite.dev/guide/build)
 and uses [strict TypeScript checking](https://www.typescriptlang.org/tsconfig/strict.html).
-Generated files and dependencies are ignored by Git. The React host deliberately
-retains the jQuery interface until plan item 3. Permission changes and automation
-reliability remain later plan items.
+Generated files and dependencies are ignored by Git. The popup uses controlled
+React forms; jQuery and the temporary HTML bridge have been removed.
 
 The lockfile overrides TypeScript ESLint's transitive `minimatch` to the patched
 11.x release because its upstream 10.x range includes a known denial-of-service
@@ -159,7 +161,7 @@ Chrome denies access or the page navigates during the connection.
 
 ## V2 storage and validation
 
-V2 starts with an empty **Default** profile. Earlier `profile1` data and previous
+V2 starts with an empty **Profile 1** profile. Earlier `profile1` data and previous
 storage namespaces are ignored; there is no migration or import step. The
 extension and package version are `2.0.0`.
 
@@ -169,7 +171,7 @@ is a separate `cmtAutofill.v2.profile.<id>` record containing its ID, name, and
 authors. Deleting the selected profile selects the first remaining profile on
 load. This also handles a profile deletion synced from another browser.
 
-Profile names must be nonempty, at most 80 characters, and unique ignoring case.
+Profiles are numbered automatically; custom naming is not available. Each profile holds up to five authors.
 Saving trims author fields and checks required fields, email syntax, supported
 country codes, and duplicate emails ignoring case. The content script repeats
 validation before filling. Errors identify the affected author; failed writes
@@ -183,5 +185,6 @@ storage fallback or automatic reset occurs.
 
 `npm test` covers fresh initialization, profile persistence and deletion,
 validation, simulated read/write/delete failures, popup operations using the
-production bundle in a DOM harness, and messaging recovery. These checks do not
+production bundle in a DOM harness, collapse/expand behavior, field error
+associations, keyboard focus, pending actions, and messaging recovery. These checks do not
 replace live CMT verification of the author-dialog automation.

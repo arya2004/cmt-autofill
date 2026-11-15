@@ -19,7 +19,7 @@ export function StatusMessage({
         <>
           <Icon name={notice.tone === 'error' ? 'warning' : 'check'} />
           <div>
-            <p>{notice.message}</p>
+            <p title={notice.message}>{notice.message}</p>
             {onRetry && (
               <button
                 id="retryLoad"

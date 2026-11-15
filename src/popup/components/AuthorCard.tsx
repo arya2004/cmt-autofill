@@ -72,12 +72,9 @@ export function AuthorCard({
             {initials || String(index + 1).padStart(2, '0')}
           </span>
           <span className="author-heading">
-            <span className="eyebrow">
-              Author {String(index + 1).padStart(2, '0')}
-            </span>
             <span className="author-name-text">{fullName || 'New author'}</span>
             <span className="author-subtitle">
-              {author.email || 'Add their contact details'}
+              {author.email || 'Enter details'}
             </span>
           </span>
           {issues.length > 0 && (
@@ -96,17 +93,20 @@ export function AuthorCard({
           <Icon name="trash" />
         </button>
       </div>
-      <div id={`fields-${draft.id}`} hidden={!expanded}>
-        {expanded && (
+      <div
+        id={`fields-${draft.id}`}
+        className="editor-reveal"
+        inert={!expanded}
+        aria-hidden={!expanded}
+      >
+        <div className="editor-clip">
           <fieldset className="author-editor" disabled={disabled}>
             <legend className="sr-only">Author {index + 1} details</legend>
             <div className="field-grid">
               {authorFields.map((field) => (
                 <div
                   key={field}
-                  className={
-                    field === 'name' || field === 'surname' ? '' : 'full-width'
-                  }
+                  className={field === 'email' ? 'full-width' : ''}
                 >
                   <FormField
                     id={fieldId(draft.id, field)}
@@ -158,7 +158,7 @@ export function AuthorCard({
               ))}
             </div>
           </fieldset>
-        )}
+        </div>
       </div>
     </section>
   );

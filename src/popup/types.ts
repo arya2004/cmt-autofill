@@ -12,7 +12,7 @@ export interface Notice {
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 export type PendingAction =
-  'load' | 'save' | 'fill' | 'select' | 'create' | 'rename' | 'delete';
+  'load' | 'save' | 'fill' | 'select' | 'create' | 'delete';
 export interface FocusRequest {
   target: string;
   sequence: number;

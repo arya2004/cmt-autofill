@@ -47,14 +47,14 @@ test('v2 starts empty and ignores older saved data without importing it', async 
   );
 });
 
-test('named profiles keep distinct authors and persist active selection', async () => {
+test('numbered profiles keep distinct authors and persist active selection', async () => {
   const storage = mockStorage();
   const original = await profiles.loadProfiles();
   await profiles.saveAuthors(original.activeProfileId, [author]);
-  const created = await profiles.createProfile('  Second team  ');
+  const created = await profiles.createProfile();
   const secondId = created.activeProfileId;
   assert.notEqual(secondId, original.activeProfileId);
-  assert.equal(profiles.findProfile(created, secondId).name, 'Second team');
+  assert.equal(profiles.findProfile(created, secondId).name, 'Profile 2');
   await profiles.saveAuthors(secondId, [
     { ...author, email: 'second@example.test' },
   ]);
@@ -64,8 +64,7 @@ test('named profiles keep distinct authors and persist active selection', async 
     (await profiles.loadAuthors(secondId))[0].email,
     'second@example.test',
   );
-  await profiles.renameProfile(secondId, 'Renamed team');
-  assert.equal(profileIn(storage.data(), secondId).name, 'Renamed team');
+  assert.equal(profileIn(storage.data(), secondId).name, 'Profile 2');
   await profiles.selectProfile(secondId);
   assert.equal((await profiles.loadProfiles()).activeProfileId, secondId);
 });
@@ -73,7 +72,7 @@ test('named profiles keep distinct authors and persist active selection', async 
 test('deleting the active profile selects a remaining profile on reopen', async () => {
   const storage = mockStorage();
   const initial = await profiles.loadProfiles();
-  const created = await profiles.createProfile('Temporary');
+  const created = await profiles.createProfile();
   const deletedId = created.activeProfileId;
   const state = await profiles.deleteProfile(deletedId);
   assert.equal(state.activeProfileId, initial.activeProfileId);
@@ -89,18 +88,24 @@ test('deleting the active profile selects a remaining profile on reopen', async 
   await assert.rejects(profiles.loadAuthors(deletedId), /no longer exists/);
 });
 
-test('names reject blanks, duplicates ignoring case, and excessive length', async () => {
+test('profiles are capped at four and deleted slots can be reused', async () => {
   mockStorage();
-  const state = await profiles.loadProfiles();
-  await assert.rejects(profiles.createProfile('  '), /Enter a profile name/);
-  await assert.rejects(profiles.createProfile('default'), /already exists/);
-  await assert.rejects(profiles.createProfile('x'.repeat(81)), /80 characters/);
-  const created = await profiles.createProfile('Other');
-  await assert.rejects(
-    profiles.renameProfile(created.activeProfileId, 'DEFAULT'),
-    /already exists/,
+  await profiles.loadProfiles();
+  let state;
+  for (let i = 0; i < 3; i++) state = await profiles.createProfile();
+  await assert.rejects(profiles.createProfile(), /four profiles/);
+  await profiles.deleteProfile(state.activeProfileId);
+  assert.equal((await profiles.createProfile()).profiles.length, 4);
+  assert.throws(
+    () =>
+      requireValidAuthors(
+        Array.from({ length: 6 }, (_, i) => ({
+          ...author,
+          email: `${i}@example.test`,
+        })),
+      ),
+    /five authors/,
   );
-  await profiles.renameProfile(state.activeProfileId, 'default');
 });
 
 test('validation identifies required fields, malformed email, unsupported country, and duplicate email', () => {
@@ -194,7 +199,7 @@ test('save and delete failures preserve previously stored data and allow retry',
   );
   assert.deepEqual(storage.data(), saved);
   storage.recover();
-  const created = await profiles.createProfile('Another');
+  const created = await profiles.createProfile();
   const beforeDelete = storage.data();
   storage.fail('remove');
   await assert.rejects(

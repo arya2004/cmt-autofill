@@ -47,7 +47,14 @@ export function FormField({
   };
   return (
     <div className="form-field">
-      <label htmlFor={id}>{label}</label>
+      <div className="field-label">
+        <label htmlFor={id}>{label}</label>
+        {error && (
+          <span className="field-error" id={`${id}-error`} title={error}>
+            {error}
+          </span>
+        )}
+      </div>
       {children ? (
         <select
           {...common}
@@ -70,11 +77,6 @@ export function FormField({
           autoComplete="off"
           onChange={(event) => onChange(event.target.value)}
         />
-      )}
-      {error && (
-        <p className="field-error" id={`${id}-error`}>
-          {error}
-        </p>
       )}
     </div>
   );

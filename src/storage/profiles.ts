@@ -5,11 +5,7 @@ import type {
   Profile,
   ProfileState,
 } from '../shared/models';
-import {
-  authorFields,
-  requireValidAuthors,
-  validateProfileName,
-} from '../shared/validation';
+import { authorFields, requireValidAuthors } from '../shared/validation';
 import { readStorage, writeStorage, removeStorage } from './chromeStorage';
 
 export const profileKey = (id: string) => `${settings.profilePrefix}${id}`;
@@ -60,7 +56,7 @@ function decodeState(raw: Record<string, unknown>): ProfileState {
         authors: readAuthors(value.authors),
       };
     })
-    .sort((a, b) => a.id.localeCompare(b.id, 'en', { numeric: true }));
+    .sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true }));
   if (!profiles.length) throw invalidStorage();
   // A removed active profile (including a synced deletion) selects the first remaining one.
   const activeProfileId = profiles.some(
@@ -109,14 +105,17 @@ export function findProfile(state: ProfileState, id: string): Profile {
   return profile;
 }
 
-export async function createProfile(name: string): Promise<ProfileState> {
+export async function createProfile(): Promise<ProfileState> {
   const state = await loadProfiles();
+  if (state.profiles.length >= settings.maxProfiles)
+    throw new Error('Maximum of four profiles.');
+  const slot = [1, 2, 3, 4].find(
+    (number) =>
+      !state.profiles.some((profile) => profile.name === `Profile ${number}`),
+  )!;
   const profile: Profile = {
     id: crypto.randomUUID(),
-    name: validateProfileName(
-      name,
-      state.profiles.map((profile) => profile.name),
-    ),
+    name: `Profile ${slot}`,
     authors: [],
   };
   await writeStorage({
@@ -129,29 +128,8 @@ export async function createProfile(name: string): Promise<ProfileState> {
   return {
     ...state,
     activeProfileId: profile.id,
-    profiles: [...state.profiles, profile],
-  };
-}
-
-export async function renameProfile(
-  id: string,
-  name: string,
-): Promise<ProfileState> {
-  const state = await loadProfiles();
-  const profile = findProfile(state, id);
-  const renamed = {
-    ...profile,
-    name: validateProfileName(
-      name,
-      state.profiles.map((profile) => profile.name),
-      profile.name,
-    ),
-  };
-  await writeStorage({ [profileKey(id)]: renamed });
-  return {
-    ...state,
-    profiles: state.profiles.map((profile) =>
-      profile.id === id ? renamed : profile,
+    profiles: [...state.profiles, profile].sort((a, b) =>
+      a.name.localeCompare(b.name),
     ),
   };
 }

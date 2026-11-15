@@ -65,11 +65,12 @@ async function openPopup(storage, { wait = true } = {}) {
   window.confirm = () => true;
   window.eval(bundle);
   const $ = (selector) => window.document.querySelector(selector);
-  await waitFor(() => $('.app-header'));
+  await waitFor(() => $('.popup-shell'));
   if (wait)
     await waitFor(() => $('main').getAttribute('aria-busy') === 'false');
   async function click(selector) {
     assert.ok($(selector), `Missing ${selector}`);
+    await waitFor(() => !$(selector).matches(':disabled'));
     $(selector).click();
     await delay(0);
   }
@@ -93,7 +94,7 @@ async function openPopup(storage, { wait = true } = {}) {
   }
   async function fill(value) {
     for (const [field, text] of Object.entries(value))
-      await set(`.author-${field}`, text);
+      await set(`.is-open .author-${field}`, text);
   }
   async function status(text) {
     await waitFor(() => $('#status').textContent.includes(text));
@@ -106,46 +107,44 @@ async function openPopup(storage, { wait = true } = {}) {
   return { window, $, click, set, fill, status, openAuthor, storage, messages };
 }
 
-test('React popup creates, saves, switches, renames, deletes, and reopens profiles', async () => {
+test('React popup creates, saves, switches, deletes, and reopens profiles', async () => {
   const storage = mockStorage({ profile1: [author] });
   const ui = await openPopup(storage);
-  assert.equal(ui.$('.author-email').value, '', 'v2 starts fresh');
+  assert.equal(ui.$('.is-open .author-email').value, '', 'v2 starts fresh');
   await ui.fill(author);
   assert.match(ui.$('.save-state').textContent, /Unsaved changes/);
   await ui.click('#saveAuthors');
   await ui.status('Authors saved');
   assert.match(ui.$('.save-state').textContent, /All changes saved/);
   await ui.click('#newProfile');
-  await ui.set('#profileName', 'Second');
-  await ui.click('#submitProfileName');
+
   await ui.status('Profile created');
-  const secondId = ui.$('#profileSelect').value;
+  const secondId = ui.$('.profile-tab[aria-pressed="true"]').dataset.profileId;
   assert.notEqual(secondId, settings.defaultProfileId);
-  assert.equal(ui.$('.author-email').value, '');
+  assert.equal(ui.$('.is-open .author-email').value, '');
   await ui.fill({ ...author, email: 'second@example.test' });
   await ui.click('#saveAuthors');
   await ui.status('Authors saved');
-  await ui.set('#profileSelect', settings.defaultProfileId);
+  await ui.click(`[data-profile-id="${settings.defaultProfileId}"]`);
   await ui.status('Profile selected');
   assert.equal(ui.$('.author-summary').getAttribute('aria-expanded'), 'false');
   assert.match(ui.$('.author-summary').textContent, /Test Author/);
   await ui.openAuthor();
-  assert.equal(ui.$('.author-email').value, author.email);
-  await ui.click('#renameProfile');
-  await ui.set('#profileName', 'Main team');
-  await ui.click('#submitProfileName');
-  await ui.status('Profile renamed');
-  assert.equal(ui.$('#profileSelect option:checked').textContent, 'Main team');
+  assert.equal(ui.$('.is-open .author-email').value, author.email);
   await ui.click('#deleteProfile');
-  assert.equal(ui.window.document.activeElement.id, 'confirmDeleteProfile');
-  await ui.click('#confirmDeleteProfile');
   await ui.status('Profile deleted');
-  assert.equal(ui.$('#profileSelect').value, secondId);
+  assert.equal(
+    ui.$('.profile-tab[aria-pressed="true"]').dataset.profileId,
+    secondId,
+  );
   await ui.openAuthor();
-  assert.equal(ui.$('.author-email').value, 'second@example.test');
+  assert.equal(ui.$('.is-open .author-email').value, 'second@example.test');
   ui.window.close();
   const reopened = await openPopup(storage);
-  assert.equal(reopened.$('#profileSelect').value, secondId);
+  assert.equal(
+    reopened.$('.profile-tab[aria-pressed="true"]').dataset.profileId,
+    secondId,
+  );
   await reopened.openAuthor();
   assert.equal(reopened.$('.author-email').value, 'second@example.test');
 });
@@ -162,7 +161,7 @@ test('inline validation, focus, storage errors, and retry preserve author drafts
   await ui.status('Profile loaded');
   await ui.click('#saveAuthors');
   await ui.status('Email is required');
-  const email = ui.$('.author-email');
+  const email = ui.$('.is-open .author-email');
   assert.equal(email.getAttribute('aria-invalid'), 'true');
   assert.equal(ui.window.document.activeElement, email);
   assert.equal(
@@ -175,7 +174,7 @@ test('inline validation, focus, storage errors, and retry preserve author drafts
   storage.fail('set', 'QUOTA_BYTES quota exceeded');
   await ui.click('#saveAuthors');
   await ui.status('Reduce saved data or wait');
-  assert.equal(ui.$('.author-email').value, author.email);
+  assert.equal(ui.$('.is-open .author-email').value, author.email);
   assert.equal(
     storage.data()[`${settings.profilePrefix}${settings.defaultProfileId}`]
       .authors.length,
@@ -193,24 +192,19 @@ test('switching profiles protects unsaved authors and filling requires a save', 
   const storage = mockStorage();
   const ui = await openPopup(storage);
   await ui.click('#newProfile');
-  await ui.set('#profileName', 'Other');
-  await ui.click('#submitProfileName');
+
   await ui.status('Profile created');
-  const currentId = ui.$('#profileSelect').value;
+  const currentId = ui.$('.profile-tab[aria-pressed="true"]').dataset.profileId;
   await ui.fill(author);
   assert.equal(ui.$('#autoFillAuthors').disabled, true);
-  assert.match(ui.$('.footer-hint').textContent, /Save to keep your changes/);
   assert.equal(ui.messages.length, 0);
   ui.window.confirm = () => false;
-  await ui.set('#profileSelect', settings.defaultProfileId);
-  assert.equal(ui.$('#profileSelect').value, currentId);
-  assert.equal(ui.$('.author-email').value, author.email);
-  await ui.click('#renameProfile');
-  await ui.set('#profileName', 'Default');
-  await ui.click('#submitProfileName');
-  await ui.status('already exists');
-  assert.match(ui.$('#profileName-error').textContent, /already exists/);
-  assert.equal(ui.$('.author-email').value, author.email);
+  await ui.click(`[data-profile-id="${settings.defaultProfileId}"]`);
+  assert.equal(
+    ui.$('.profile-tab[aria-pressed="true"]').dataset.profileId,
+    currentId,
+  );
+  assert.equal(ui.$('.is-open .author-email').value, author.email);
 });
 
 test('collapsed author cards retain values; invalid save opens and focuses the affected card', async () => {
@@ -218,21 +212,24 @@ test('collapsed author cards retain values; invalid save opens and focuses the a
   await ui.fill(author);
   await ui.click('#addAuthor');
   assert.equal(ui.window.document.querySelectorAll('.author-card').length, 2);
-  assert.equal(ui.$('.author-email').value, '');
-  assert.equal(ui.window.document.activeElement, ui.$('.author-email'));
+  assert.equal(ui.$('.is-open .author-email').value, '');
+  assert.equal(
+    ui.window.document.activeElement,
+    ui.$('.is-open .author-email'),
+  );
   await ui.fill({ ...author, email: 'TEST@example.test', name: 'Second' });
   await ui.click('.author-card:nth-child(2) .author-summary');
-  assert.equal(ui.$('.author-email'), null);
+  assert.equal(ui.$('.is-open .author-email'), null);
   await ui.click('#saveAuthors');
   await ui.status('Email duplicates author 1');
-  const email = ui.$('.author-email');
+  const email = ui.$('.is-open .author-email');
   assert.equal(email.value, 'TEST@example.test');
   assert.equal(ui.window.document.activeElement, email);
-  await ui.set('.author-email', 'second@example.test');
+  await ui.set('.is-open .author-email', 'second@example.test');
   await ui.click('#saveAuthors');
   await ui.status('Authors saved');
   await ui.openAuthor(0);
-  assert.equal(ui.$('.author-email').value, author.email);
+  assert.equal(ui.$('.is-open .author-email').value, author.email);
   await ui.click('.author-card:nth-child(2) .remove-author');
   assert.equal(ui.window.document.querySelectorAll('.author-card').length, 1);
   assert.equal(ui.window.document.activeElement, ui.$('.author-summary'));
@@ -251,7 +248,7 @@ test('loading and saving disable controls until persistence finishes', async () 
   assert.equal(ui.$('#saveAuthors').disabled, true);
   releaseLoad();
   globalThis.chrome.storage.sync.get = originalGet;
-  await waitFor(() => ui.$('.author-email'));
+  await waitFor(() => ui.$('.is-open .author-email'));
   await ui.fill(author);
   const originalSet = globalThis.chrome.storage.sync.set;
   let releaseSave;
@@ -271,13 +268,55 @@ test('loading and saving disable controls until persistence finishes', async () 
   assert.equal(ui.$('#autoFillAuthors').disabled, false);
 });
 
-test('canceling profile changes leaves authors intact and restores keyboard focus', async () => {
+test('profile and author controls enforce caps; collapsed editors are inert', async () => {
+  const ui = await openPopup(mockStorage());
+  for (let i = 0; i < 3; i++) {
+    await ui.click('#newProfile');
+    await waitFor(
+      () =>
+        ui.window.document.querySelectorAll('.profile-tab').length === i + 2,
+    );
+  }
+  assert.equal(ui.$('#newProfile'), null);
+  assert.equal(ui.$('#profileName'), null);
+  for (let i = 0; i < 4; i++) await ui.click('#addAuthor');
+  assert.equal(ui.$('#addAuthor').disabled, true);
+  assert.equal(ui.window.document.querySelectorAll('.author-card').length, 5);
+  assert.equal(ui.window.document.querySelectorAll('.is-open').length, 1);
+  assert.equal(
+    ui.window.document.querySelectorAll('.editor-reveal[inert]').length,
+    4,
+  );
+});
+
+test('autofill errors stay in the React popup and allow retry', async () => {
   const ui = await openPopup(mockStorage());
   await ui.fill(author);
-  await ui.click('#renameProfile');
-  assert.equal(ui.window.document.activeElement.id, 'profileName');
-  await ui.click('.profile-editor .button-quiet');
-  assert.equal(ui.$('.profile-editor'), null);
-  assert.equal(ui.window.document.activeElement.id, 'profileSelect');
-  assert.equal(ui.$('.author-email').value, author.email);
+  await ui.click('#saveAuthors');
+  await ui.status('Authors saved');
+  const originalQuery = ui.window.chrome.tabs.query;
+  ui.window.chrome.tabs.query = async () => [
+    { id: 5, url: 'https://example.com' },
+  ];
+  await ui.click('#autoFillAuthors');
+  await ui.status('Open the Microsoft CMT');
+  assert.equal(ui.$('#status').getAttribute('role'), 'alert');
+  assert.equal(ui.$('#autoFillAuthors').disabled, false);
+  ui.window.chrome.tabs.query = originalQuery;
+  const originalMessage = ui.window.chrome.tabs.sendMessage;
+  ui.window.chrome.tabs.sendMessage = async () => {
+    throw new Error('Receiving end does not exist.');
+  };
+  ui.window.chrome.scripting = {
+    async executeScript() {
+      throw new Error('Cannot access this page.');
+    },
+  };
+  await ui.click('#autoFillAuthors');
+  await ui.status('Could not connect to the CMT page');
+  assert.equal(ui.$('#autoFillAuthors').disabled, false);
+  ui.window.chrome.tabs.sendMessage = originalMessage;
+  await ui.click('#autoFillAuthors');
+  await ui.status('Autofill started');
+  assert.equal(ui.messages.length, 1);
 });

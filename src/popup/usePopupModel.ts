@@ -1,3 +1,4 @@
+import { settings } from '../config/settings';
 import { useEffect, useRef, useState } from 'react';
 import type { Author, ProfileState } from '../shared/models';
 import { normalizeAuthors, validateAuthors } from '../shared/validation';
@@ -6,7 +7,6 @@ import {
   deleteProfile,
   findProfile,
   loadProfiles,
-  renameProfile,
   saveAuthors,
   selectProfile,
 } from '../storage/profiles';
@@ -143,6 +143,7 @@ export function usePopupModel() {
     setNotice(null);
   }
   function addAuthor() {
+    if (pending || drafts.length >= settings.maxAuthors) return;
     const draft = newDraft();
     setDrafts((previous) => [...previous, draft]);
     setExpandedId(draft.id);
@@ -219,7 +220,7 @@ export function usePopupModel() {
       'Profile selected.',
     );
   }
-  async function create(name: string): Promise<ActionResult> {
+  async function create(): Promise<ActionResult> {
     if (!canLeave())
       return {
         ok: false,
@@ -229,21 +230,10 @@ export function usePopupModel() {
     return run(
       'create',
       async () => {
-        const next = await createProfile(name);
+        const next = await createProfile();
         if (mounted.current) applyState(next);
       },
       'Profile created. Add and save authors.',
-    );
-  }
-  async function rename(name: string): Promise<ActionResult> {
-    if (!state) return { ok: false, error: 'Load your profiles first.' };
-    return run(
-      'rename',
-      async () => {
-        const next = await renameProfile(state.activeProfileId, name);
-        if (mounted.current) setState(next);
-      },
-      'Profile renamed.',
     );
   }
   async function remove(): Promise<ActionResult> {
@@ -292,7 +282,6 @@ export function usePopupModel() {
     fill,
     changeProfile,
     create,
-    rename,
     remove,
     retry,
   };

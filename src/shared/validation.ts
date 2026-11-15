@@ -71,6 +71,8 @@ export function validateAuthors(authors: Author[]): ValidationIssue[] {
 export function requireValidAuthors(authors: Author[]): Author[] {
   if (!authors.length)
     throw new Error('Add at least one author before saving or filling.');
+  if (authors.length > settings.maxAuthors)
+    throw new Error('Maximum of five authors.');
   const issues = validateAuthors(authors);
   if (issues.length) {
     throw new Error(
@@ -80,29 +82,4 @@ export function requireValidAuthors(authors: Author[]): Author[] {
     );
   }
   return normalizeAuthors(authors);
-}
-
-export function validateProfileName(
-  name: string,
-  existingNames: string[],
-  currentName?: string,
-): string {
-  const trimmed = name.trim();
-  if (!trimmed) throw new Error('Enter a profile name.');
-  if (trimmed.length > settings.profileNameMaxLength)
-    throw new Error(
-      `Profile names must be ${settings.profileNameMaxLength} characters or fewer.`,
-    );
-  if (
-    existingNames.some(
-      (existing) =>
-        existing !== currentName &&
-        existing.toLowerCase() === trimmed.toLowerCase(),
-    )
-  ) {
-    throw new Error(
-      'A profile with this name already exists. Choose another name.',
-    );
-  }
-  return trimmed;
 }
