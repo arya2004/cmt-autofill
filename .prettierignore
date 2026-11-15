@@ -1,0 +1,9 @@
+node_modules/
+dist/
+# Existing website and repository prose are refreshed in later plan items.
+docs/
+.github/
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENSE
+PLAN.md

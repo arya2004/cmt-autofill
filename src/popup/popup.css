@@ -1,5 +1,5 @@
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 20px;
   width: 480px;
@@ -109,10 +109,13 @@ button:hover {
   color: #005a9e;
   font-size: 12px;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
-.profile-button:hover, .profile-button.active {
+.profile-button:hover,
+.profile-button.active {
   background-color: #0078d7;
   color: #fff;
 }
@@ -122,7 +125,8 @@ button:hover {
   gap: 10px;
 }
 
-#saveAuthors, #addAuthor {
+#saveAuthors,
+#addAuthor {
   flex: 1;
 }
 
