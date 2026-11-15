@@ -1,3 +1,4 @@
+import { cmtSelectors, cmtTiming } from './config';
 import type { Author } from '../shared/models';
 
 function setKnockoutValue(inputElement: HTMLInputElement, value: string) {
@@ -11,7 +12,7 @@ function setKnockoutValue(inputElement: HTMLInputElement, value: string) {
         `Set value for: ${inputElement.placeholder || inputElement.name}`,
       );
     }
-    setTimeout(resolve, 1);
+    setTimeout(resolve, cmtTiming.fieldUpdateMs);
   });
 }
 
@@ -28,7 +29,7 @@ export function fillAuthorsSequentially(authors: Author[]) {
     const author = authors[index];
     if (!author) return;
     const addButton = document.querySelector<HTMLButtonElement>(
-      'button[data-bind*="showDialog(true)"]',
+      cmtSelectors.addAuthor,
     );
 
     if (addButton) {
@@ -36,9 +37,7 @@ export function fillAuthorsSequentially(authors: Author[]) {
       console.log(`Clicked Add button for Author ${index + 1}`);
 
       setTimeout(async () => {
-        const form = document.querySelector(
-          'form[data-bind*="submit: function () { $parent.addAuthor($data); }"]',
-        );
+        const form = document.querySelector(cmtSelectors.authorForm);
 
         if (!form) {
           alert('Author form not found.');
@@ -46,22 +45,22 @@ export function fillAuthorsSequentially(authors: Author[]) {
         }
 
         const emailField = form.querySelector<HTMLInputElement>(
-          'input[data-bind*="value: email"]',
+          cmtSelectors.email,
         );
         const firstNameField = form.querySelector<HTMLInputElement>(
-          'input[data-bind*="value: firstName"]',
+          cmtSelectors.name,
         );
         const lastNameField = form.querySelector<HTMLInputElement>(
-          'input[data-bind*="value: lastName"]',
+          cmtSelectors.surname,
         );
         const organizationField = form.querySelector<HTMLInputElement>(
-          'input[data-bind*="value: organization"]',
+          cmtSelectors.organization,
         );
         const countryDropdown = form.querySelector<HTMLSelectElement>(
-          'select[data-bind*="value: countryCode"]',
+          cmtSelectors.country,
         );
         const submitButton = form.querySelector<HTMLButtonElement>(
-          'button[type="submit"]',
+          cmtSelectors.submit,
         );
 
         if (emailField) await setKnockoutValue(emailField, author.email || '');
@@ -76,7 +75,9 @@ export function fillAuthorsSequentially(authors: Author[]) {
           countryDropdown.value = author.country || '';
           countryDropdown.dispatchEvent(new Event('change', { bubbles: true }));
           console.log(`Selected country: ${author.country}`);
-          await new Promise<void>((resolve) => setTimeout(resolve, 1));
+          await new Promise<void>((resolve) =>
+            setTimeout(resolve, cmtTiming.fieldUpdateMs),
+          );
         }
 
         console.log(`Filled Author ${index + 1}:`, author);
@@ -86,11 +87,11 @@ export function fillAuthorsSequentially(authors: Author[]) {
           console.log(`Clicked Submit button for Author ${index + 1}`);
 
           index++;
-          setTimeout(processNextAuthor, 2);
+          setTimeout(processNextAuthor, cmtTiming.nextAuthorMs);
         } else {
           alert('Submit button not found in the form!');
         }
-      }, 1);
+      }, cmtTiming.dialogOpenMs);
     } else {
       alert('Add button not found on the page.');
     }

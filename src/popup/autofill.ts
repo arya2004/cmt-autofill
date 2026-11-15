@@ -1,3 +1,4 @@
+import { settings } from '../config/settings';
 import type { AutoFillRequest } from '../shared/models';
 
 const connectionError =
@@ -23,10 +24,7 @@ export async function startAutofill(profile: string): Promise<void> {
       'No active tab was found. Open the CMT submission page and try again.',
     );
   const url = tab.url ? new URL(tab.url) : undefined;
-  if (
-    url?.protocol !== 'https:' ||
-    url.hostname !== 'cmt3.research.microsoft.com'
-  ) {
+  if (url?.origin !== settings.cmtOrigin) {
     throw new Error(
       'Open the Microsoft CMT submission page before filling authors.',
     );
@@ -37,7 +35,7 @@ export async function startAutofill(profile: string): Promise<void> {
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        files: ['contentScript.js'],
+        files: [settings.contentScriptFile],
       });
       if (!(await isReady(tab.id))) throw new Error(connectionError);
     } catch {

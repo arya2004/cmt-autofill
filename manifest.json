@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "CMT Author Auto-Filler",
-  "version": "1.0",
+  "version": "2.0.0",
   "description": "Auto-fills author details in Microsoft CMT.",
   "permissions": ["storage", "scripting", "activeTab", "declarativeContent"],
   "host_permissions": [

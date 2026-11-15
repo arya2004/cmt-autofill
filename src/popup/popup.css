@@ -148,3 +148,25 @@ button:hover {
 #addAuthor:hover {
   background-color: #f57c00;
 }
+
+#profileControls {
+  border: 1px solid #ccc;
+  margin-bottom: 12px;
+}
+
+#status {
+  white-space: pre-line;
+}
+
+#status[role='alert'] {
+  color: #a12121;
+}
+
+[aria-invalid='true'] {
+  border-color: #a12121;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}

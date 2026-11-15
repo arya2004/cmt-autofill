@@ -1,5 +1,6 @@
 import type { AutoFillRequest } from '../shared/models';
-import { loadAuthors } from '../storage/authors';
+import { loadAuthors } from '../storage/profiles';
+import { requireValidAuthors } from '../shared/validation';
 import { fillAuthorsSequentially } from './fillAuthors';
 
 // Programmatic recovery and manifest injection can both run on the same page.
@@ -17,16 +18,21 @@ if (!scope.cmtAutofillRegistered) {
       if (request.action === 'autoFillAuthors') {
         // Acknowledge receipt, not completion of the page automation.
         sendResponse({ accepted: true });
-        const profileKey = request.profile || 'profile1';
-        loadAuthors(profileKey, (authors) => {
-          if (authors.length === 0) {
+        void loadAuthors(request.profile)
+          .then((authors) => {
+            if (!authors.length) {
+              alert('No authors to fill. Please save author details first.');
+              return;
+            }
+            fillAuthorsSequentially(requireValidAuthors(authors));
+          })
+          .catch((error: unknown) => {
             alert(
-              `No authors to fill for ${profileKey}. Please save author details first.`,
+              error instanceof Error
+                ? error.message
+                : 'Could not load saved authors. Reopen the extension and retry.',
             );
-            return;
-          }
-          fillAuthorsSequentially(authors);
-        });
+          });
       }
     },
   );

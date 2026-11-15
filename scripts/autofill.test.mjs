@@ -2,23 +2,11 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { afterEach, test } from 'node:test';
 import { runInNewContext } from 'node:vm';
-import { Buffer } from 'node:buffer';
 import { URL } from 'node:url';
-import ts from 'typescript';
+import { loadSourceModule } from './test-helpers.mjs';
+import { setImmediate } from 'node:timers/promises';
 
-const source = await readFile(
-  new URL('../src/popup/autofill.ts', import.meta.url),
-  'utf8',
-);
-const compiled = ts.transpileModule(source, {
-  compilerOptions: {
-    module: ts.ModuleKind.ESNext,
-    target: ts.ScriptTarget.ES2022,
-  },
-}).outputText;
-const { startAutofill } = await import(
-  `data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`
-);
+const { startAutofill } = await loadSourceModule('../src/popup/autofill.ts');
 const cmtUrl =
   'https://cmt3.research.microsoft.com/ICICDSE2027/Track/1/Submission/Create';
 const originalChrome = globalThis.chrome;
@@ -129,6 +117,9 @@ test('built content script acknowledges messages and registers only once', async
           get(_, cb) {
             cb({});
           },
+          set(_, cb) {
+            cb();
+          },
         },
       },
     },
@@ -145,12 +136,13 @@ test('built content script acknowledges messages and registers only once', async
   });
   assert.equal(response.ready, true);
   listeners[0](
-    { action: 'autoFillAuthors', profile: 'profile1' },
+    { action: 'autoFillAuthors', profile: 'default' },
     {},
     (value) => {
       response = value;
     },
   );
   assert.equal(response.accepted, true);
+  await setImmediate();
   assert.match(alerts[0], /No authors to fill/);
 });
