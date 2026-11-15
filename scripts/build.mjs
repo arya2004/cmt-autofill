@@ -20,6 +20,7 @@ await copyFile(
 await cp(new URL('../assets/icons/', import.meta.url), `${outDir}/icons`, {
   recursive: true,
 });
+await copyFile(new URL('../LICENSE', import.meta.url), `${outDir}/LICENSE`);
 await build({
   configFile: false,
   root: `${root}/src/popup`,

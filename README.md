@@ -73,8 +73,7 @@ profile persistence, validation, messaging recovery and synthetic CMT forms.
 Fixtures document existing automation limitations: slow dialogs can fail,
 rejected authors are not detected, and the completion alert does not prove CMT
 accepted every author. Partial fills are possible. Review the actual list before
-retrying to avoid duplicates. Automation timing remains unchanged because the
-automation overhaul was canceled.
+retrying to avoid duplicates. The automation uses fixed delays.
 
 The user confirmed live autofill worked during development. Current visual UI and
 all conference-specific dialog behavior remain unverified in Chrome. Title,
@@ -85,8 +84,8 @@ reopen the popup. The popup checks for a receiver and attempts injection when
 missing; Chrome access restrictions may still require refreshing.
 
 See [CONTRIBUTING](CONTRIBUTING.md), [privacy](PRIVACY.md), [security](SECURITY.md),
-[release instructions](RELEASING.md), and [changelog](CHANGELOG.md).
+and [tag commands](TAGGING.md).
 
 ## License
 
-[CC BY-NC-ND 4.0](LICENSE). Independent project; not affiliated with Microsoft.
+[MIT](LICENSE). Independent project; not affiliated with Microsoft.

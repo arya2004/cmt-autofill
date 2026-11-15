@@ -28,7 +28,7 @@ async function walk(path = '') {
     else {
       assert.match(
         name,
-        /^(manifest\.json|popup\.html|contentScript\.js|assets\/[\w.-]+\.(js|css)|icons\/icon-(16|32|48|128)\.png)$/,
+        /^(LICENSE|manifest\.json|popup\.html|contentScript\.js|assets\/[\w.-]+\.(js|css)|icons\/icon-(16|32|48|128)\.png)$/,
       );
       files.push(name);
     }
@@ -36,6 +36,7 @@ async function walk(path = '') {
 }
 await walk();
 for (const path of [
+  'LICENSE',
   manifest.action.default_popup,
   ...Object.values(manifest.icons),
   ...Object.values(manifest.action.default_icon),

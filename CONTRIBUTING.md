@@ -11,11 +11,9 @@ credentials or browser storage dumps in PRs.
 
 Report bugs at https://github.com/arya2004/cmt-autofill/issues with extension and
 Chrome versions, reproduction steps, expected/actual behavior and redacted errors.
-Follow [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 PRs should describe resulting behavior, validation and remaining limits. Do not
 commit `dist/` or `node_modules/`. Rebuild after edits. See [README](README.md) for
-architecture and [RELEASING](RELEASING.md) for packaging.
+architecture and [TAGGING](TAGGING.md) for packaging.
 
-The existing [license](LICENSE) is preserved. Review its noncommercial and
-no-derivatives restrictions before redistribution.
+Contributions are licensed under [MIT](LICENSE).

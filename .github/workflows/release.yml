@@ -1,4 +1,4 @@
-name: Draft release
+name: Release
 on:
   push:
     tags: ['v*']
@@ -35,9 +35,9 @@ jobs:
         if: github.event_name == 'push'
         with:
           subject-path: dist/packages/*.zip
-      - name: Create draft release
+      - name: Publish release
         if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
-        run: gh release create "$RELEASE_TAG" dist/packages/* --draft --verify-tag --generate-notes --repo "$GITHUB_REPOSITORY"
+        run: gh release create "$RELEASE_TAG" dist/packages/* --verify-tag --generate-notes --repo "$GITHUB_REPOSITORY"
