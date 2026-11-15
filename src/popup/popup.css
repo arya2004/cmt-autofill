@@ -1,17 +1,25 @@
 :root {
+  --ink: #182b32;
+  --secondary: #52676e;
+  --accent: #007f79;
+  --surface: #ffffff;
+  --canvas: #f0f5f5;
+  --line: #d7e3e3;
+  --radius-card: 16px;
+  --radius-control: 10px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: #202126;
-  background: #f5f5f7;
+  color: var(--ink);
+  background: var(--canvas);
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
-  font-size: 12px;
+  font-size: 14px;
 }
 * {
   box-sizing: border-box;
 }
 body {
   margin: 0;
-  width: 420px;
+  width: 460px;
 }
 button,
 input,
@@ -35,12 +43,12 @@ button:active:not(:disabled) {
 }
 button:disabled {
   cursor: default;
-  opacity: 0.4;
+  opacity: 0.48;
 }
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 2px solid #007aff;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 button svg {
@@ -51,7 +59,8 @@ button svg {
 .popup-shell {
   padding: 12px;
   background:
-    radial-gradient(ellipse at top left, #fff, transparent 65%), #f5f5f7;
+    radial-gradient(ellipse at top left, #ffffff, transparent 70%),
+    var(--canvas);
 }
 .profile-panel {
   display: flex;
@@ -64,25 +73,25 @@ button svg {
   flex: 1;
   gap: 3px;
   padding: 4px;
-  border-radius: 12px;
-  background: #e8e8ed;
+  border-radius: 14px;
+  background: #e1eaea;
   box-shadow: inset 0 1px 2px #00000005;
 }
 .profile-tab {
   flex: 1;
   min-width: 0;
   border: 0;
-  border-radius: 8px;
-  padding: 8px 5px;
-  color: #72727b;
+  border-radius: var(--radius-control);
+  padding: 7px 6px;
+  color: var(--secondary);
   background: transparent;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
 }
 .profile-tab[aria-pressed='true'] {
   background: #fff;
-  color: #202126;
+  color: var(--ink);
   box-shadow:
     0 2px 5px #00000012,
     0 0 1px #00000012;
@@ -91,20 +100,20 @@ button svg {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: 0;
-  border-radius: 8px;
-  color: #85858f;
+  border-radius: var(--radius-control);
+  color: var(--secondary);
   background: transparent;
 }
 .icon-button:hover:not(:disabled) {
   color: #d33535;
-  background: #e9e9ee;
+  background: #e3eded;
 }
 #newProfile:hover {
-  color: #007aff;
+  color: var(--accent);
 }
 .authors-toolbar {
   display: flex;
@@ -112,13 +121,13 @@ button svg {
   justify-content: space-between;
   height: 27px;
   margin-bottom: 6px;
-  color: #74747e;
-  font-size: 11px;
+  color: var(--secondary);
+  font-size: 13px;
   font-weight: 600;
 }
 .count-badge {
   margin-left: 5px;
-  color: #a0a0a8;
+  color: var(--secondary);
   font-variant-numeric: tabular-nums;
 }
 .text-button {
@@ -128,7 +137,7 @@ button svg {
   padding: 4px;
   border: 0;
   background: transparent;
-  color: #007aff;
+  color: var(--accent);
   font-weight: 600;
 }
 .author-list {
@@ -137,9 +146,9 @@ button svg {
   gap: 4px;
 }
 .author-card {
-  border: 1px solid #e3e3e9;
-  border-radius: 13px;
-  background: #ffffffb8;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: #ffffffc9;
   box-shadow: 0 1px 3px #00000003;
   transition:
     border-color 160ms,
@@ -149,14 +158,16 @@ button svg {
 }
 .author-card.is-open {
   background: #fff;
-  border-color: #d6dce7;
-  box-shadow: 0 3px 12px #152b5010;
+  border-color: #a7c9c5;
+  box-shadow:
+    0 3px 12px #164e4510,
+    0 1px 2px #164e4508;
 }
 .author-card-header {
   display: flex;
   align-items: center;
   padding-right: 5px;
-  height: 39px;
+  height: 40px;
 }
 .author-summary {
   display: flex;
@@ -165,9 +176,9 @@ button svg {
   min-width: 0;
   flex: 1;
   height: 100%;
-  padding: 5px 9px;
+  padding: 4px 10px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 14px;
   background: transparent;
   text-align: left;
   color: inherit;
@@ -179,12 +190,12 @@ button svg {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 29px;
-  height: 29px;
-  border-radius: 9px;
-  background: linear-gradient(145deg, #e9f2ff, #e5e9f5);
-  color: #4573a8;
-  font-size: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-control);
+  background: linear-gradient(145deg, #dcf4ed, #dcecee);
+  color: #256b62;
+  font-size: 12px;
   font-weight: 650;
   text-transform: uppercase;
 }
@@ -193,15 +204,16 @@ button svg {
   flex: 1;
   min-width: 0;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
 }
 .author-name-text {
   font-weight: 600;
-  font-size: 12px;
+  font-size: 14px;
+  line-height: 17px;
 }
 .author-subtitle {
-  color: #90909a;
-  font-size: 10px;
+  color: var(--secondary);
+  font-size: 12px;
 }
 .author-name-text,
 .author-subtitle {
@@ -210,7 +222,7 @@ button svg {
   text-overflow: ellipsis;
 }
 .expand-icon {
-  color: #aaaab2;
+  color: #627c81;
   transition: transform 180ms ease;
   width: 13px;
 }
@@ -236,13 +248,13 @@ button svg {
 .author-editor {
   border: 0;
   margin: 0;
-  padding: 4px 12px 12px;
+  padding: 4px 12px 10px;
   min-width: 0;
 }
 .field-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px 10px;
+  gap: 5px 10px;
 }
 .field-grid > div {
   min-width: 0;
@@ -256,35 +268,35 @@ button svg {
   gap: 6px;
   height: 16px;
   margin-bottom: 3px;
-  font-size: 10px;
+  font-size: 12px;
 }
 .field-label label {
   flex-shrink: 0;
-  color: #74747e;
+  color: var(--secondary);
   font-weight: 500;
 }
 .field-control {
   width: 100%;
-  height: 31px;
-  border: 1px solid #e6e6eb;
-  border-radius: 7px;
-  background: #f9f9fb;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: #f5f8f8;
   padding: 0 9px;
-  color: #25252b;
+  color: var(--ink);
   min-width: 0;
 }
 .field-control:focus {
   background: #fff;
 }
 .field-control::placeholder {
-  color: #b0b0b8;
+  color: #687d83;
 }
 .field-control[aria-invalid='true'] {
   border-color: #e9a8a8;
 }
 .field-error {
   color: #c73434;
-  font-size: 9px;
+  font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -304,10 +316,10 @@ button svg {
   background: #e8a13c;
 }
 .action-bar {
-  margin-top: 10px;
+  margin-top: 8px;
 }
 .feedback-row {
-  height: 24px;
+  height: 30px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -317,8 +329,8 @@ button svg {
   display: inline-flex;
   gap: 5px;
   align-items: center;
-  color: #92929c;
-  font-size: 10px;
+  color: var(--secondary);
+  font-size: 12px;
   flex-shrink: 0;
 }
 .feedback-row:has(.notice-error) .save-state {
@@ -327,8 +339,8 @@ button svg {
 .notice {
   min-width: 0;
   flex: 1;
-  font-size: 10px;
-  color: #73737e;
+  font-size: 12px;
+  color: var(--secondary);
 }
 .notice > svg {
   display: none;
@@ -355,41 +367,41 @@ button svg {
   gap: 8px;
 }
 .button {
-  height: 39px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
   border: 0;
-  border-radius: 11px;
+  border-radius: 14px;
   font-weight: 600;
 }
 .button-secondary {
-  background: #e9e9ee;
-  color: #4e4e59;
+  background: #e3eded;
+  color: #314e55;
 }
 .button-primary {
-  background: linear-gradient(#1687ff, #0073ef);
+  background: linear-gradient(180deg, #078e85, #007b75);
   box-shadow:
-    0 2px 4px #007aff20,
+    0 2px 4px #007f7920,
     inset 0 1px 0 #ffffff30;
   color: white;
 }
 .button-primary:hover:not(:disabled) {
-  box-shadow: 0 3px 9px #007aff35;
+  box-shadow: 0 3px 9px #007f7935;
 }
 .loading-panel {
   height: 240px;
   display: grid;
   place-content: center;
   justify-items: center;
-  color: #92929c;
+  color: var(--secondary);
 }
 .spinner {
   width: 20px;
   height: 20px;
   border: 2px solid #e1e1e6;
-  border-top-color: #007aff;
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 700ms linear infinite;
 }
@@ -426,4 +438,44 @@ button svg {
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* Shared geometry keeps nested surfaces and controls visually aligned. */
+.author-summary:hover:not(:disabled) {
+  background: #e5f2ee70;
+}
+.field-control:hover:not(:disabled) {
+  border-color: #b4cbc8;
+}
+.field-control:focus-visible {
+  box-shadow: 0 0 0 3px #007f7912;
+}
+.profile-tab:hover:not(:disabled):not([aria-pressed='true']) {
+  background: #ffffff60;
+}
+.button-secondary:hover:not(:disabled) {
+  background: #d5e5e3;
+}
+.button-primary:disabled {
+  background: #dce8e6;
+  color: #627d78;
+  box-shadow: none;
+  opacity: 1;
+}
+.field-label:has(.field-error) label {
+  color: #b52e37;
+}
+.field-error {
+  flex: 1;
+  text-align: right;
+}
+.author-subtitle {
+  line-height: 15px;
+}
+.count-badge {
+  font-weight: 400;
+}
+.button {
+  font-size: 14px;
+  letter-spacing: -0.1px;
 }
