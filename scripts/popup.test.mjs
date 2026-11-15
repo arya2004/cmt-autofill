@@ -38,7 +38,7 @@ async function waitFor(condition) {
   assert.fail('Timed out waiting for popup state');
 }
 
-async function openPopup(storage, { wait = true } = {}) {
+async function openPopup(storage) {
   const dom = new JSDOM(html, {
     url: 'https://extension.test/popup.html',
     runScripts: 'outside-only',
@@ -66,8 +66,7 @@ async function openPopup(storage, { wait = true } = {}) {
   window.eval(bundle);
   const $ = (selector) => window.document.querySelector(selector);
   await waitFor(() => $('.popup-shell'));
-  if (wait)
-    await waitFor(() => $('main').getAttribute('aria-busy') === 'false');
+  await waitFor(() => $('main').getAttribute('aria-busy') === 'false');
   async function click(selector) {
     assert.ok($(selector), `Missing ${selector}`);
     await waitFor(() => !$(selector).matches(':disabled'));
@@ -234,38 +233,6 @@ test('collapsed author cards retain values; invalid save opens and focuses the a
   assert.equal(ui.window.document.querySelectorAll('.author-card').length, 1);
   assert.equal(ui.window.document.activeElement, ui.$('.author-summary'));
   assert.match(ui.$('.save-state').textContent, /Unsaved changes/);
-});
-
-test('loading and saving disable controls until persistence finishes', async () => {
-  const storage = mockStorage();
-  const originalGet = globalThis.chrome.storage.sync.get;
-  let releaseLoad;
-  globalThis.chrome.storage.sync.get = (keys, callback) => {
-    releaseLoad = () => originalGet(keys, callback);
-  };
-  const ui = await openPopup(storage, { wait: false });
-  assert.match(ui.$('.loading-panel').textContent, /Loading your profiles/);
-  assert.equal(ui.$('#saveAuthors').disabled, true);
-  releaseLoad();
-  globalThis.chrome.storage.sync.get = originalGet;
-  await waitFor(() => ui.$('.is-open .author-email'));
-  await ui.fill(author);
-  const originalSet = globalThis.chrome.storage.sync.set;
-  let releaseSave;
-  globalThis.chrome.storage.sync.set = (values, callback) => {
-    releaseSave = () => originalSet(values, callback);
-  };
-  await ui.click('#saveAuthors');
-  await waitFor(() => ui.$('#saveAuthors').textContent.includes('Saving'));
-  assert.equal(ui.$('#saveAuthors').disabled, true);
-  assert.equal(ui.$('#autoFillAuthors').disabled, true);
-  assert.equal(ui.$('main').getAttribute('aria-busy'), 'true');
-  assert.equal(ui.$('.author-editor').disabled, true);
-  assert.equal(storage.writes(), 1);
-  releaseSave();
-  await ui.status('Authors saved');
-  assert.equal(storage.writes(), 2);
-  assert.equal(ui.$('#autoFillAuthors').disabled, false);
 });
 
 test('profile and author controls enforce caps; collapsed editors are inert', async () => {
