@@ -1,190 +1,92 @@
 # CMT Author Auto-Fill v2
 
-A Chrome extension that automates the process of filling author details in the Microsoft Conference Management Toolkit (CMT). This tool allows users to save, load, and auto-fill authors' information (Email, First Name, Last Name, Organization, and Country) into the CMT form.
+Save author lists and fill Microsoft CMT submission creation forms. React and
+TypeScript, for Chrome 120+.
 
----
+- Four numbered profiles, added with **+**; no custom naming.
+- Five authors per profile: email, first name, last name, organization, country.
+- Compact animated editors, reduced-motion support and inline validation.
+- Chrome sync storage with actionable save errors and retry support.
 
-## **Features**
+## Install
 
-- **Profiles**: Up to four numbered author lists, added with `+`.
-- **Save Author Details**: Save validated author information for reuse.
-- **Load Author Details**: Load saved author information into the extension.
-- **Auto-Fill Form**: Automatically fill the author details sequentially in the CMT form with a single click.
-- **React Interface**: Collapsible author cards, inline validation, and visible save/fill actions.
+Use Node.js 24 (`.nvmrc`) and npm:
 
----
+```sh
+git clone https://github.com/arya2004/cmt-autofill.git
+cd cmt-autofill
+nvm use
+npm ci
+npm run build
+```
 
-## **Screenshots**
+Open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**
+and select `dist/extension/`. Reload the extension after rebuilding.
 
-### **Extension Popup Interface**
+Alternatively, extract a versioned ZIP from
+[Releases](https://github.com/arya2004/cmt-autofill/releases) and load the extracted
+folder containing `manifest.json`. Release availability depends on maintainer
+publication; source builds work independently.
 
-This is the popup interface where users can input author details and initiate the auto-fill process.
+## Use
 
-<div style="text-align: center;">
-    <img src="./docs/images/ext.png" alt="Extension Popup" width="400">
-</div>
+1. Open the extension, enter author details and press **Save**.
+2. Use **Add** for another author and tap a card to edit. Profile **+** adds
+   another team; the profile trash control asks before deleting.
+3. Open a submission creation page on `https://cmt3.research.microsoft.com`,
+   then press **Fill authors**. Save changes first to enable filling.
+4. Review the resulting CMT author list before submitting your paper.
 
-### **CMT Auto-Fill in Action**
-
-This screenshot shows the auto-filled author details in the CMT submission form after using the extension.
-
-![Auto-Filled Form](./docs/images/after.png)
-
----
-
-## **Installation**
-
-1. **Clone or Download** the repository to your local machine:
-
-   ```bash
-   git clone https://github.com/arya2004/cmt-autofill.git
-   ```
-
-2. **Build the extension** with Node.js 24 (see `.nvmrc`):
-
-   ```bash
-   nvm use
-   npm ci
-   npm run build
-   ```
-
-3. **Open Chrome** and navigate to:
-
-   ```
-   chrome://extensions
-   ```
-
-4. **Enable Developer Mode**:
-   - Toggle the developer mode switch at the top-right corner.
-
-5. **Load the Extension**:
-   - Click on the "Load unpacked" button.
-   - Select `dist/extension/` inside this repository.
-
-6. The extension will now be visible in your Chrome toolbar.
-
----
-
-## **Usage**
-
-### **Step 1: Save Author Details**
-
-- Click the extension icon to open the popup.
-- Fill in Email, First Name, Last Name, Organization, and Country for each author.
-- All fields are required. Emails must be valid and unique within the profile.
-- Click the **Save** button to store the information.
-
-### **Step 2: Load Saved Details**
-
-- Saved authors load automatically when you open the popup or select a profile.
-- Select a numbered profile or press **+** to add one (four maximum). The trash
-  control deletes the selected profile after confirmation; one profile must remain.
-- Tap an author to expand its editor. **+ Add** creates another author (five maximum).
-- Editors expand and collapse with short animations that respect reduced motion.
-  All five authors and the save/fill controls fit without scrolling.
-- Save changes to enable **Fill authors**. Switching profiles prompts before
-  discarding unsaved changes.
-
-### **Step 3: Auto-Fill Form**
-
-- Save any author changes, then navigate to the CMT submission page.
-- Click the **Fill Authors** button in the extension popup.
-- The extension will sequentially:
-  - Click the "Add Author" button.
-  - Fill the details for each author.
-  - Submit the form for each author.
-
----
-
-## **Supported Fields**
-
-Each author includes the following details:
-
-- **Email**
-- **First Name**
-- **Last Name**
-- **Organization**
-- **Country**
-
----
-
-## **License**
-
-This project is licensed under the [CC BY-NC-ND 4.0](LICENSE).
-
----
+Switching profiles prompts before discarding unsaved edits. Drafts are lost when
+the popup closes. V2 starts fresh and does not import older profile data.
 
 ## Development
 
-Use Node.js 24 and npm. Run `npm ci` after cloning.
+| Command                | Purpose                                                   |
+| ---------------------- | --------------------------------------------------------- |
+| `npm run dev`          | Watch production extension bundles                        |
+| `npm run build`        | Strict typecheck and production build                     |
+| `npm test`             | Build and test storage, popup, messaging and CMT fixtures |
+| `npm run lint`         | ESLint                                                    |
+| `npm run format-check` | Prettier check                                            |
+| `npm run format`       | Apply formatting                                          |
+| `npm run package`      | Rebuild, validate and ZIP extension with SHA-256          |
+| `npm run check`        | All checks and package verification                       |
 
-| Command                | Purpose                                                                  |
-| ---------------------- | ------------------------------------------------------------------------ |
-| `npm run dev`          | Build and watch the popup and content script in `dist/extension/`        |
-| `npm run lint`         | Check source and tooling with ESLint                                     |
-| `npm run format-check` | Check formatting with Prettier                                           |
-| `npm run format`       | Apply formatting                                                         |
-| `npm test`             | Build and run profile, validation, popup, and messaging regression tests |
-| `npm run typecheck`    | Check strict TypeScript types                                            |
-| `npm run build`        | Typecheck and build the production extension                             |
+Packaging requires `zip` and `unzip` (available on macOS and Ubuntu runners).
+Output is `dist/packages/cmt-autofill-2.0.0.zip` and its `.sha256` file. The ZIP
+contains production extension files only, with `manifest.json` at its root.
+Generated `dist/` stays out of Git.
 
-Load `dist/extension/` through Chrome's **Load unpacked** control. After a watched
-build, reload the extension at `chrome://extensions`, reopen its popup, and refresh
-the target tab to load the new content script. Restart `npm run dev` after changing
-`manifest.json`; the manifest is copied when the build starts. Development uses
-bundles on disk, without a development server or hot reload.
+`src/popup/` contains React UI/state, `src/storage/` owns persistence,
+`src/shared/` owns models/validation, `src/config/` contains settings/countries,
+and `src/cmt/` contains selectors and existing automation. `scripts/` holds build,
+packaging and test tooling.
 
-Source layout:
+After watched builds, reload the extension and refresh the target tab. Restart
+`npm run dev` after manifest changes. There is no development server or website.
 
-- `src/popup/`: React entry, popup state hook, reusable components, and styles.
-- `src/storage/`: Versioned v2 profiles and Chrome sync storage error handling.
-- `src/shared/`: Profile/author models and validation shared by popup and CMT integration.
-- `src/config/`: Application settings and CMT country options.
-- `src/cmt/`: Content-script entry and existing author automation.
-- `scripts/build.mjs`: Vite popup build and standalone content-script bundle.
-- `manifest.json`: Manifest V3 source; generated paths refer to build output.
+## Verification and limitations
 
-The build follows [Vite's production build modes](https://vite.dev/guide/build)
-and uses [strict TypeScript checking](https://www.typescriptlang.org/tsconfig/strict.html).
-Generated files and dependencies are ignored by Git. The popup uses controlled
-React forms; jQuery and the temporary HTML bridge have been removed.
+Tests exercise the production popup/content-script bundles, storage failures,
+profile persistence, validation, messaging recovery and synthetic CMT forms.
+Fixtures document existing automation limitations: slow dialogs can fail,
+rejected authors are not detected, and the completion alert does not prove CMT
+accepted every author. Partial fills are possible. Review the actual list before
+retrying to avoid duplicates. Automation timing remains unchanged because the
+automation overhaul was canceled.
 
-The lockfile overrides TypeScript ESLint's transitive `minimatch` to the patched
-11.x release because its upstream 10.x range includes a known denial-of-service
-advisory. Recheck this override when upgrading TypeScript ESLint.
+The user confirmed live autofill worked during development. Current visual UI and
+all conference-specific dialog behavior remain unverified in Chrome. Title,
+abstract, uploads and final paper submission remain manual.
 
-If Fill Authors reports a connection error, reload the extension at
-`chrome://extensions` after rebuilding, then reopen the CMT submission tab and
-try again. The popup now checks that the content script is listening and injects
-it into the active CMT tab when missing. It reports a refresh instruction if
-Chrome denies access or the page navigates during the connection.
+For connection errors, reload the extension, refresh the CMT submission tab and
+reopen the popup. The popup checks for a receiver and attempts injection when
+missing; Chrome access restrictions may still require refreshing.
 
-## V2 storage and validation
+See [CONTRIBUTING](CONTRIBUTING.md), [privacy](PRIVACY.md), [security](SECURITY.md),
+[release instructions](RELEASING.md), and [changelog](CHANGELOG.md).
 
-V2 starts with an empty **Profile 1** profile. Earlier `profile1` data and previous
-storage namespaces are ignored; there is no migration or import step. The
-extension and package version are `2.0.0`.
+## License
 
-Profiles continue to use Chrome sync storage. Settings are stored under
-`cmtAutofill.v2.settings` with `schemaVersion: 2` and `activeProfileId`. Each profile
-is a separate `cmtAutofill.v2.profile.<id>` record containing its ID, name, and
-authors. Deleting the selected profile selects the first remaining profile on
-load. This also handles a profile deletion synced from another browser.
-
-Profiles are numbered automatically; custom naming is not available. Each profile holds up to five authors.
-Saving trims author fields and checks required fields, email syntax, supported
-country codes, and duplicate emails ignoring case. The content script repeats
-validation before filling. Errors identify the affected author; failed writes
-keep the editor contents so you can retry. Unsaved edits must be saved before
-filling. Drafts are not persisted when the popup closes.
-
-Chrome sync has [per-item, total-storage, and write-rate quotas](https://developer.chrome.com/docs/extensions/reference/api/storage).
-A quota failure reports a reduce-data/wait-and-retry message. Damaged or unknown
-v2 schemas report an error rather than overwriting saved profiles. No local
-storage fallback or automatic reset occurs.
-
-`npm test` covers fresh initialization, profile persistence and deletion,
-validation, simulated read/write/delete failures, popup operations using the
-production bundle in a DOM harness, collapse/expand behavior, field error
-associations, keyboard focus, pending actions, and messaging recovery. These checks do not
-replace live CMT verification of the author-dialog automation.
+[CC BY-NC-ND 4.0](LICENSE). Independent project; not affiliated with Microsoft.

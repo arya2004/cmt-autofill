@@ -1,5 +1,5 @@
 import process from 'node:process';
-import { copyFile, mkdir, rm } from 'node:fs/promises';
+import { copyFile, cp, mkdir, rm } from 'node:fs/promises';
 import { fileURLToPath, URL } from 'node:url';
 import { build } from 'vite';
 
@@ -17,6 +17,9 @@ await copyFile(
   new URL('../manifest.json', import.meta.url),
   `${outDir}/manifest.json`,
 );
+await cp(new URL('../assets/icons/', import.meta.url), `${outDir}/icons`, {
+  recursive: true,
+});
 await build({
   configFile: false,
   root: `${root}/src/popup`,

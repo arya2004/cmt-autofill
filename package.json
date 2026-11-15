@@ -13,7 +13,9 @@
     "format-check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && node scripts/build.mjs",
-    "test": "npm run build && node --test scripts/*.test.mjs"
+    "test": "npm run build && node --test scripts/*.test.mjs",
+    "package": "npm run build && node scripts/package.mjs",
+    "check": "npm run format-check && npm run lint && npm test && node scripts/package.mjs"
   },
   "dependencies": {
     "react": "^19.2.0",

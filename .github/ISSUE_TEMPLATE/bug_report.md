@@ -1,32 +1,16 @@
 ---
-name: Bug Report
-about: Report a bug to help us improve
-title: "[BUG] "
-labels: bug
-assignees: ''
-
+name: Bug report
+about: Report a reproducible extension problem
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Versions:** Extension / Chrome / OS
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '...'
-3. Scroll down to '...'
-4. See error
+**Steps to reproduce:**
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**Expected / actual behavior:**
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Redacted error:**
 
-**Environment (please complete the following information):**
- - OS: [e.g., Windows, macOS]
- - Browser [e.g., Chrome, Firefox]
- - Version [e.g., 22]
+**CMT context:** Creation page? Were some authors added before failure?
 
-**Additional context**
-Add any other context about the problem here.
+Remove names, emails, paper details and credentials from screenshots and logs.
